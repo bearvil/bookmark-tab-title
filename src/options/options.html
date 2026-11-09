@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bookmark-Tab Title</title>
+    <link rel="icon" href="../../icons/icon-32.png" />
+    <link rel="stylesheet" href="../ui/tokens.css" />
+    <link rel="stylesheet" href="../ui/components.css" />
+    <link rel="stylesheet" href="options.css" />
+    <script type="module" src="options.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="stack">
+        <div class="brand">
+          <img class="brand__icon" src="../../icons/icon-toolbar.svg" alt="" />
+          <p class="text-title" data-i18n="extName"></p>
+        </div>
+        <h1 class="text-display" data-i18n="optionsHeading"></h1>
+        <p class="text-body tone-secondary" data-i18n="optionsIntro"></p>
+      </header>
+
+      <section class="stack">
+        <div class="toolbar">
+          <label class="search">
+            <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+            <input id="search" class="field" type="search" autocomplete="off" data-i18n-attr="placeholder:optionsSearch,aria-label:optionsSearch" />
+          </label>
+          <p id="count" class="text-caption tone-secondary" aria-live="polite"></p>
+        </div>
+
+        <ul id="list" class="surface list" aria-labelledby="list-label"></ul>
+        <p id="list-label" class="visually-hidden" data-i18n="keepOnHostLabel"></p>
+
+        <div id="empty" class="surface empty" hidden>
+          <p id="empty-title" class="text-title"></p>
+          <p id="empty-body" class="text-body tone-secondary"></p>
+        </div>
+      </section>
+
+      <section class="surface surface--pad stack">
+        <p class="text-title" data-i18n="optionsHowTitle"></p>
+        <p class="text-body tone-secondary" data-i18n="optionsHow1"></p>
+        <p class="text-body tone-secondary" data-i18n="optionsHow2"></p>
+        <p class="text-body tone-secondary" data-i18n="optionsHow3"></p>
+      </section>
+
+      <footer class="footer text-caption tone-secondary">
+        <a class="tone-accent" href="https://bearvil.github.io/privacy-policies/bookmark-tab-title-pp" target="_blank" rel="noopener" data-i18n="privacyPolicy"></a>
+        <a class="tone-accent" href="https://github.com/bearvil/bookmark-tab-title" target="_blank" rel="noopener" data-i18n="sourceCode"></a>
+        <span id="version"></span>
+      </footer>
+    </div>
+
+    <template id="row">
+      <li class="row">
+        <label class="row__main">
+          <span class="text-body text-strong truncate" data-field="title"></span>
+          <span class="text-caption tone-secondary truncate" data-field="where"></span>
+        </label>
+        <input class="switch" type="checkbox" role="switch" data-field="keep" />
+      </li>
+    </template>
+  </body>
+</html>

@@ -27,6 +27,10 @@ How it works
 • Works when a site redirects within itself, e.g. a bookmark for example.com that lands on example.com/login. A page on another site never gets your bookmark name.
 • Small differences in the address are ignored: http/https, "www.", a trailing slash or a #section.
 
+Keep the name on the whole host
+• Turn it on per bookmark and the tab keeps the bookmark's name on every page of that host, e.g. all of mail.example.com, not only the bookmarked address. Leaving the host ends it.
+• One switch, three places: the extension's popup (with the bookmark name of the page you are on, editable), the settings page with all your bookmarks, and the right-click menu.
+
 Private by design
 • No data collected, no account, no analytics, no ads.
 • No network requests at all. Your bookmarks never leave your browser.
@@ -42,11 +46,12 @@ Shows the name of the user's bookmark as the browser tab title whenever the page
 
 | Permission | Justification |
 |---|---|
-| `bookmarks` | Reads the user's bookmark names and URLs locally to find the bookmark that matches the page open in a tab and show its name as the tab title. Bookmarks are never modified or sent anywhere. |
+| `bookmarks` | Reads the user's bookmark names and URLs locally to find the bookmark that matches the page open in a tab and show its name as the tab title. A bookmark is only renamed or added when the user does so in the extension's popup. Bookmarks are never sent anywhere. |
+| `contextMenus` | Adds one checkbox item to the page's right-click menu: "Keep bookmark name on all of <host>", the same per-bookmark setting as in the popup and the settings page. |
 | Host permissions `http://*/*`, `https://*/*` | Any website can be a bookmark, so the bundled content script must be able to run on any http/https page to set its document title to the bookmark name, and the service worker needs the tab URL to match it against bookmarks. The extension makes no network requests and does not read page content. |
 | `webNavigation` | Detects the URL a page load started from before a same-site server redirect (e.g. a bookmark for example.com that redirects to example.com/login), so the bookmark name is still applied, and detects in-page (history API) navigation so the title stays correct in single-page apps. |
 | `scripting` | Used only when the extension is installed or updated, to inject its own bundled content script into tabs that were already open, so it works without reloading every tab. No remote or dynamically generated code is executed. |
-| `storage` | Uses `chrome.storage.session` only (held in memory, cleared when the tab or browser closes) to remember, per tab, the URLs its current page was loaded from while the service worker is idle. |
+| `storage` | `chrome.storage.sync` keeps the user's per-bookmark "keep the name on the whole host" setting (the bookmark URLs that have it on). `chrome.storage.session` (held in memory, cleared when the tab or browser closes) remembers, per tab, the URLs its current page was loaded from and the bookmark it was opened from, while the service worker is idle. |
 | Remote code | None. All code is in the package; no remote scripts, no `eval`. |
 
 ## Privacy practices (Chrome Web Store)

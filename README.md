@@ -8,6 +8,8 @@ Rename a bookmark to "Mail – work" and the tab is called exactly that, even wh
 - Matches the tab URL against your bookmarks: exact match first, then ignoring the protocol, `www.`, the `#fragment` and a trailing `/`.
 - Also works after a redirect within the same site (bookmark `example.com` → `example.com/login`) and through in-page navigation in single-page apps. A page on another site never gets your bookmark name.
 - Updates immediately when you add, rename or delete a bookmark. Deleting it restores the page's own title.
+- **Keep the name on the whole host** (per bookmark, off by default): the tab keeps the bookmark name on every page of that host, not only on the bookmarked address, until it leaves the host.
+- One setting, three places: the toolbar popup (the bookmark of the current page, its name and the switch), the settings page with all bookmarks, and the page's right-click menu.
 - Everything happens locally. No network requests, no analytics, no account.
 
 ## Install (development)

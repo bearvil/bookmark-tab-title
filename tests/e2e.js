@@ -19,6 +19,9 @@ const routes = {
   '/slash/': page('Slash'),
   '/spa': page('SPA'),
   '/attacker': page('Attacker'),
+  '/host/a': page('Host A', '<a id="next" href="/host/b">next</a>'),
+  '/host/b': page('Host B', '<a id="away" href="__AWAY__">away</a>'),
+  '/plain2': page('Plain two'),
   // Like Gmail: the page keeps changing its own title.
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
@@ -44,6 +47,9 @@ const server = http.createServer((req, res) => {
 });
 await new Promise((r) => server.listen(0, r));
 const base = `http://127.0.0.1:${server.address().port}`;
+// Same server under another host name, to leave the host.
+const away = `http://localhost:${server.address().port}/landing`;
+routes['/host/b'] = routes['/host/b'].replace('__AWAY__', away);
 
 const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'btt-e2e-'));
 const context = await chromium.launchPersistentContext(userDataDir, {
@@ -173,11 +179,115 @@ await check('second copy of the content script (extension update) restores the r
   await tab.waitForTimeout(300);
   await expectTitle(tab, 'Original');
 });
+const extensionId = new URL(sw.url()).host;
+const tabIdOf = (url) => sw.evaluate(async (u) => (await chrome.tabs.query({ url: u }))[0]?.id, url);
+const popupFor = async (url) => {
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/src/popup/popup.html?tab=${await tabIdOf(url)}`);
+  await popup.waitForTimeout(300);
+  return popup;
+};
+const optionsPage = async () => {
+  const options = await context.newPage();
+  await options.goto(`chrome-extension://${extensionId}/src/options/options.html`);
+  await options.waitForSelector('#list .switch');
+  return options;
+};
+
+await check('whole host off (default): following a link on the same host shows the page title', async () => {
+  await bookmark.create('Host bookmark', `${base}/host/a`);
+  await tab.goto(`${base}/host/a`);
+  await expectTitle(tab, 'Host bookmark');
+  await Promise.all([tab.waitForURL('**/host/b'), tab.click('#next')]);
+  await tab.waitForTimeout(500);
+  await expectTitle(tab, 'Host B');
+});
+await check('popup shows the bookmark of the page the tab is on, switch off', async () => {
+  const popup = await popupFor(`${base}/host/b`);
+  if (await popup.locator('#state-bookmark').isHidden()) throw new Error('popup does not show the bookmark');
+  const name = await popup.inputValue('#name');
+  const host = await popup.textContent('#host');
+  const keep = await popup.isChecked('#keep');
+  const openedFrom = await popup.isVisible('#opened-from');
+  await popup.close();
+  if (name !== 'Host bookmark' || host !== '127.0.0.1' || keep || !openedFrom) {
+    throw new Error(JSON.stringify({ name, host, keep, openedFrom }));
+  }
+});
+await check('popup switch on → name stays on the whole host, after reloads and links', async () => {
+  const popup = await popupFor(`${base}/host/b`);
+  await popup.click('#keep');
+  await popup.close();
+  await expectTitle(tab, 'Host bookmark');
+  await tab.reload();
+  await expectTitle(tab, 'Host bookmark');
+  await tab.goto(`${base}/host/a`);
+  await Promise.all([tab.waitForURL('**/host/b'), tab.click('#next')]);
+  await expectTitle(tab, 'Host bookmark');
+});
+await check('a bookmark of its own on the same host wins over the whole-host name', async () => {
+  await bookmark.create('Plain two bookmark', `${base}/plain2`);
+  await tab.goto(`${base}/plain2`);
+  await expectTitle(tab, 'Plain two bookmark');
+});
+await check('leaving the host ends the whole-host name', async () => {
+  await tab.goto(`${base}/host/a`);
+  await Promise.all([tab.waitForURL('**/host/b'), tab.click('#next')]);
+  await expectTitle(tab, 'Host bookmark');
+  await Promise.all([tab.waitForURL(away), tab.click('#away')]);
+  await tab.goto(`${base}/host/b`);
+  await tab.waitForTimeout(500);
+  await expectTitle(tab, 'Host B');
+});
+await check('options page shows the same switch and turning it off works everywhere', async () => {
+  await tab.goto(`${base}/host/a`);
+  await Promise.all([tab.waitForURL('**/host/b'), tab.click('#next')]);
+  await expectTitle(tab, 'Host bookmark');
+  const options = await optionsPage();
+  const row = options.locator('#list li', { hasText: 'Host bookmark' });
+  if (!(await row.locator('.switch').isChecked())) throw new Error('options switch is not on');
+  await row.locator('.switch').click();
+  await options.close();
+  await tab.reload();
+  await tab.waitForTimeout(500);
+  await expectTitle(tab, 'Host B');
+  const popup = await popupFor(`${base}/host/b`);
+  const keep = await popup.isChecked('#keep');
+  await popup.close();
+  if (keep) throw new Error('popup switch still on');
+});
+await check('popup renames the bookmark and the tab follows', async () => {
+  await tab.goto(`${base}/host/a`);
+  await expectTitle(tab, 'Host bookmark');
+  const popup = await popupFor(`${base}/host/a`);
+  await popup.fill('#name', 'Renamed in popup');
+  await popup.waitForTimeout(600);
+  await popup.close();
+  await expectTitle(tab, 'Renamed in popup');
+});
+await check('popup on a page that is not a bookmark can bookmark it', async () => {
+  // A fresh tab: the main tab is anchored to a bookmark on this host, which the popup would show instead.
+  const fresh = await context.newPage();
+  await fresh.goto(`${base}/landing`);
+  const popup = await popupFor(`${base}/landing`);
+  if (await popup.locator('#state-none').isHidden()) throw new Error('popup does not offer to bookmark');
+  await popup.click('#add-bookmark');
+  await popup.waitForSelector('#state-bookmark:not([hidden])');
+  await popup.fill('#name', 'Fresh bookmark');
+  await popup.waitForTimeout(600);
+  await popup.close();
+  await expectTitle(fresh, 'Fresh bookmark');
+  await fresh.close();
+});
+await check('context menu item exists (clicking native menus is not scriptable)', async () => {
+  // update() rejects for an unknown menu id.
+  await sw.evaluate(() => chrome.contextMenus.update('keep-on-host', {}));
+});
 await check('another tab without a bookmark is not affected', async () => {
   const other = await context.newPage();
-  await other.goto(`${base}/landing`);
+  await other.goto(`${base}/attacker`);
   await other.waitForTimeout(500);
-  await expectTitle(other, 'Landing');
+  await expectTitle(other, 'Attacker');
   await other.close();
 });
 

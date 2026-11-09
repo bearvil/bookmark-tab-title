@@ -6,5 +6,101 @@
   "extDescription": {
     "message": "Shows the name of your bookmark as the tab title whenever a bookmarked page is open.",
     "description": "Short description shown in the browser and the store (max 132 characters)."
+  },
+  "menuKeepOnHost": {
+    "message": "Keep bookmark name on all of $HOST$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupAllBookmarks": {
+    "message": "All bookmarks"
+  },
+  "popupUnsupportedTitle": {
+    "message": "Not available here"
+  },
+  "popupUnsupportedBody": {
+    "message": "Browsers don't let extensions change this page."
+  },
+  "popupNoBookmarkTitle": {
+    "message": "This page isn't a bookmark"
+  },
+  "popupNoBookmarkBody": {
+    "message": "Bookmark it and the tab takes the name you give it."
+  },
+  "popupAddBookmark": {
+    "message": "Bookmark this page"
+  },
+  "fieldName": {
+    "message": "Bookmark name"
+  },
+  "saved": {
+    "message": "Saved"
+  },
+  "openedFrom": {
+    "message": "This tab was opened from this bookmark."
+  },
+  "keepOnHostLabel": {
+    "message": "Keep the name on the whole host"
+  },
+  "keepOnHostHint": {
+    "message": "When on, the tab keeps this name on every page of $HOST$, not only on the bookmarked address.",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsHeading": {
+    "message": "Names that stay"
+  },
+  "optionsIntro": {
+    "message": "Choose which bookmarks keep their name in the tab on every page of their host, not only on the bookmarked address."
+  },
+  "optionsSearch": {
+    "message": "Search bookmarks"
+  },
+  "optionsCount": {
+    "message": "$ON$ of $TOTAL$ bookmarks keep their name on the whole host",
+    "placeholders": {
+      "on": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsNoMatchTitle": {
+    "message": "Nothing matches"
+  },
+  "optionsNoMatchBody": {
+    "message": "Try another name, address or folder."
+  },
+  "optionsNoBookmarksTitle": {
+    "message": "No bookmarks yet"
+  },
+  "optionsNoBookmarksBody": {
+    "message": "Bookmark a page (Ctrl+D, or ⌘D on a Mac) and it shows up here."
+  },
+  "optionsHowTitle": {
+    "message": "How it works"
+  },
+  "optionsHow1": {
+    "message": "A bookmarked page shows the bookmark name as its tab title."
+  },
+  "optionsHow2": {
+    "message": "With “whole host” on, the tab keeps the name while you browse other pages of the same host. Leaving the host ends it."
+  },
+  "optionsHow3": {
+    "message": "The switch is the same here, in the extension's popup and when you right-click a page."
+  },
+  "privacyPolicy": {
+    "message": "Privacy policy"
+  },
+  "sourceCode": {
+    "message": "Source code"
   }
 }

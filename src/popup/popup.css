@@ -1,0 +1,12 @@
+/* Layout only — every visual comes from tokens.css and components.css. */
+body {
+  width: 340px;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.hint {
+  padding: 0 var(--space-xs);
+}

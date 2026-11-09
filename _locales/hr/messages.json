@@ -4,5 +4,101 @@
   },
   "extDescription": {
     "message": "Kad je otvorena stranica spremljena kao bookmark, naslov taba postaje naziv bookmarka."
+  },
+  "menuKeepOnHost": {
+    "message": "Zadrži naziv bookmarka na cijelom $HOST$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupAllBookmarks": {
+    "message": "Svi bookmarki"
+  },
+  "popupUnsupportedTitle": {
+    "message": "Ovdje ne radi"
+  },
+  "popupUnsupportedBody": {
+    "message": "Preglednici ne dopuštaju proširenjima mijenjati ovu stranicu."
+  },
+  "popupNoBookmarkTitle": {
+    "message": "Ova stranica nije bookmark"
+  },
+  "popupNoBookmarkBody": {
+    "message": "Spremi je kao bookmark i tab će nositi naziv koji joj daš."
+  },
+  "popupAddBookmark": {
+    "message": "Spremi stranicu kao bookmark"
+  },
+  "fieldName": {
+    "message": "Naziv bookmarka"
+  },
+  "saved": {
+    "message": "Spremljeno"
+  },
+  "openedFrom": {
+    "message": "Ovaj tab je otvoren iz ovog bookmarka."
+  },
+  "keepOnHostLabel": {
+    "message": "Zadrži naziv na cijelom hostu"
+  },
+  "keepOnHostHint": {
+    "message": "Kad je uključeno, tab zadržava ovaj naziv na svakoj stranici hosta $HOST$, ne samo na adresi bookmarka.",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsHeading": {
+    "message": "Nazivi koji ostaju"
+  },
+  "optionsIntro": {
+    "message": "Odaberi koji bookmarki zadržavaju svoj naziv u tabu na svakoj stranici svog hosta, ne samo na adresi bookmarka."
+  },
+  "optionsSearch": {
+    "message": "Pretraži bookmarke"
+  },
+  "optionsCount": {
+    "message": "$ON$ od $TOTAL$ bookmarka zadržava naziv na cijelom hostu",
+    "placeholders": {
+      "on": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsNoMatchTitle": {
+    "message": "Ništa ne odgovara"
+  },
+  "optionsNoMatchBody": {
+    "message": "Pokušaj s drugim nazivom, adresom ili mapom."
+  },
+  "optionsNoBookmarksTitle": {
+    "message": "Još nema bookmarka"
+  },
+  "optionsNoBookmarksBody": {
+    "message": "Spremi stranicu kao bookmark (Ctrl+D, na Macu ⌘D) i pojavit će se ovdje."
+  },
+  "optionsHowTitle": {
+    "message": "Kako radi"
+  },
+  "optionsHow1": {
+    "message": "Stranica iz bookmarka u tabu pokazuje naziv bookmarka umjesto svog naslova."
+  },
+  "optionsHow2": {
+    "message": "Kad je „cijeli host” uključen, tab zadržava naziv dok pregledavaš druge stranice istog hosta. Odlaskom s hosta to prestaje."
+  },
+  "optionsHow3": {
+    "message": "Prekidač je isti ovdje, u izborniku proširenja i kad desnom tipkom klikneš na stranicu."
+  },
+  "privacyPolicy": {
+    "message": "Pravila privatnosti"
+  },
+  "sourceCode": {
+    "message": "Izvorni kod"
   }
 }

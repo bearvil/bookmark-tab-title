@@ -11,8 +11,21 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
+  "action": {
+    "default_title": "__MSG_extName__",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
   "permissions": [
     "bookmarks",
+    "contextMenus",
     "webNavigation",
     "scripting",
     "storage"

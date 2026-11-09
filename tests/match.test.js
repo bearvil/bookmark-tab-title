@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildIndex, findTitle, normalizeUrl, originOf, siteOf } from '../src/match.js';
+import { buildIndex, findBookmark, hostOf, normalizeUrl, originOf, siteOf } from '../src/match.js';
+
+const findTitle = (index, ...urls) => findBookmark(index, ...urls)?.title ?? null;
 
 const tree = [
   {
@@ -75,4 +77,16 @@ test('different sites differ, e.g. a link shortener and its target', () => {
 test('originOf', () => {
   assert.equal(originOf('https://example.com/a?b#c'), 'https://example.com');
   assert.equal(originOf('nope'), null);
+});
+
+test('findBookmark returns id, name and URL', () => {
+  const idx = buildIndex([{ children: [{ id: '7', title: ' Mail ', url: 'https://mail.example/' }] }]);
+  assert.deepEqual(findBookmark(idx, 'https://mail.example/#inbox'), { id: '7', title: 'Mail', url: 'https://mail.example/' });
+});
+
+test('hostOf drops www. and keeps subdomains apart', () => {
+  assert.equal(hostOf('https://WWW.Example.com/a'), 'example.com');
+  assert.equal(hostOf('https://mail.google.com/x'), 'mail.google.com');
+  assert.notEqual(hostOf('https://mail.google.com/'), hostOf('https://accounts.google.com/'));
+  assert.equal(hostOf('nope'), null);
 });

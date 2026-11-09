@@ -42,6 +42,15 @@ export function originOf(raw) {
   }
 }
 
+// Host without "www.", the unit for "keep the bookmark name on the whole host".
+export function hostOf(raw) {
+  try {
+    return new URL(raw).hostname.toLowerCase().replace(/^www\./, '');
+  } catch {
+    return null;
+  }
+}
+
 // Index built from chrome.bookmarks.getTree(). For duplicates the first one in the tree wins (the bookmarks bar comes first).
 export function buildIndex(tree) {
   const exact = new Map();
@@ -50,9 +59,10 @@ export function buildIndex(tree) {
     for (const node of nodes) {
       const title = node.title?.trim();
       if (node.url && title) {
-        if (!exact.has(node.url)) exact.set(node.url, title);
+        const bookmark = { id: node.id, title, url: node.url };
+        if (!exact.has(node.url)) exact.set(node.url, bookmark);
         const key = normalizeUrl(node.url);
-        if (key && !loose.has(key)) loose.set(key, title);
+        if (key && !loose.has(key)) loose.set(key, bookmark);
       }
       if (node.children) walk(node.children);
     }
@@ -62,7 +72,7 @@ export function buildIndex(tree) {
 }
 
 // The first URL wins (the tab's current URL), then the others (e.g. the URL before a redirect).
-export function findTitle(index, ...urls) {
+export function findBookmark(index, ...urls) {
   for (const url of urls) {
     if (!url) continue;
     if (index.exact.has(url)) return index.exact.get(url);
