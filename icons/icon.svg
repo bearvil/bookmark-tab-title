@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <title>Bookmark-Tab Title</title>
+  <!-- Master icon: 96x96 artwork centred in a 128x128 canvas with a 16 px transparent margin (Chrome Web Store guideline). -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B4F58"/>
+      <stop offset="1" stop-color="#062F35"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(16 16) scale(3)">
+    <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+    <rect x="0.25" y="0.25" width="31.5" height="31.5" rx="6.75" fill="none" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="0.5"/>
+    <!-- Browser tab: rounded top, flared feet on the baseline -->
+    <path d="M2 26 Q6 26 6 22 V11 Q6 8 9 8 H23 Q26 8 26 11 V22 Q26 26 30 26 Z" fill="#5EEAD4"/>
+    <!-- Title line -->
+    <rect x="9" y="14" width="6" height="2" rx="1" fill="#083F47"/>
+    <!-- Gap that separates the ribbon from the tab -->
+    <path d="M16.5 8 H25.5 V25.5 L21 21.5 L16.5 25.5 Z" fill="#083F47"/>
+    <!-- Bookmark ribbon -->
+    <path d="M18 6 H24 V22 L21 19 L18 22 Z" fill="#FB8742"/>
+  </g>
+</svg>

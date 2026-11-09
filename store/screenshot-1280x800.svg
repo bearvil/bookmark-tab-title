@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800">
+  <title>Bookmark-Tab Title: before and after</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&amp;display=block');
+      text { font-family: 'Nunito', 'Avenir Next', system-ui, sans-serif; }
+      .h1 { font-size: 44px; font-weight: 800; letter-spacing: -1px; fill: #F5F4FB; }
+      .accent { fill: #5EEAD4; }
+      .sub { font-size: 20px; font-weight: 600; fill: #C9DEDC; }
+      .pill { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
+      .tab { font-size: 17px; font-weight: 700; fill: #B4CDCB; }
+      .tab-active { font-size: 17px; font-weight: 800; fill: #F5F4FB; }
+      .url { font-size: 15px; font-weight: 600; fill: #9DB9B7; }
+    </style>
+    <!-- Background: Astra palette, dark variant -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#002E34"/>
+      <stop offset="0.2" stop-color="#0D2122"/>
+      <stop offset="0.45" stop-color="#002E34"/>
+      <stop offset="0.65" stop-color="#144E4E"/>
+      <stop offset="0.85" stop-color="#093537"/>
+      <stop offset="1" stop-color="#002E34"/>
+    </linearGradient>
+    <!-- App icon (same geometry as icons/icon-toolbar.svg) -->
+    <symbol id="icon" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="7" fill="#083F47"/>
+      <rect x="0.25" y="0.25" width="31.5" height="31.5" rx="6.75" fill="none" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="0.5"/>
+      <path d="M2 26 Q6 26 6 22 V11 Q6 8 9 8 H23 Q26 8 26 11 V22 Q26 26 30 26 Z" fill="#5EEAD4"/>
+      <rect x="9" y="14" width="6" height="2" rx="1" fill="#083F47"/>
+      <path d="M16.5 8 H25.5 V25.5 L21 21.5 L16.5 25.5 Z" fill="#083F47"/>
+      <path d="M18 6 H24 V22 L21 19 L18 22 Z" fill="#FB8742"/>
+    </symbol>
+  </defs>
+
+  <rect width="1280" height="800" fill="url(#bg)"/>
+
+  <!-- Heading -->
+  <use href="#icon" x="80" y="52" width="64" height="64"/>
+  <text class="h1" x="168" y="96">Tabs named like your <tspan class="accent">bookmarks</tspan></text>
+  <text class="sub" x="168" y="134">Open a bookmarked page and its tab shows the bookmark name, not the page title.</text>
+
+  <!-- Before -->
+  <rect x="80" y="166" width="96" height="30" rx="15" fill="none" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="1"/>
+  <text class="pill" x="128" y="186" text-anchor="middle" fill="#C9DEDC">BEFORE</text>
+  <g transform="translate(80 208)">
+    <!-- Window frame (glass surface, depth 1) -->
+    <rect width="1120" height="240" rx="22" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1"/>
+    <!-- Window controls (neutral, not tied to any OS) -->
+    <circle cx="30" cy="34" r="6" fill="#FFFFFF" fill-opacity="0.22"/>
+    <circle cx="50" cy="34" r="6" fill="#FFFFFF" fill-opacity="0.22"/>
+    <circle cx="70" cy="34" r="6" fill="#FFFFFF" fill-opacity="0.22"/>
+    <!-- Toolbar (depth 2) merged with the active tab -->
+    <path d="M1 60 H86 Q100 60 100 48 V24 Q100 12 114 12 H346 Q360 12 360 24 V48 Q360 60 374 60 H1119 V116 H1 Z" fill="#FFFFFF" fill-opacity="0.08"/>
+    <!-- Active tab -->
+    <rect x="122" y="27" width="16" height="16" rx="5" fill="#7FD6E0"/>
+    <text class="tab-active" x="150" y="41">Inbox (3)</text>
+    <path d="M336 30 L346 40 M346 30 L336 40" stroke="#C9DEDC" stroke-opacity="0.7" stroke-width="2" stroke-linecap="round"/>
+    <!-- Inactive tabs -->
+    <rect x="392" y="27" width="16" height="16" rx="5" fill="#FFB783"/>
+    <text class="tab" x="420" y="41">Dashboard</text>
+    <line x1="630" y1="24" x2="630" y2="46" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+    <rect x="652" y="27" width="16" height="16" rx="5" fill="#B9A8F0"/>
+    <text class="tab" x="680" y="41">Dashboard</text>
+    <line x1="890" y1="24" x2="890" y2="46" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+    <text class="tab" x="912" y="42" font-size="22">+</text>
+    <!-- Address bar (depth 3) -->
+    <rect x="24" y="70" width="1072" height="36" rx="18" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1"/>
+    <text class="url" x="48" y="94">mail.example.com/inbox</text>
+    <path d="M1062 77 H1074 V99 L1068 94 L1062 99 Z" fill="#FB8742"/>
+    <!-- Page content skeleton -->
+    <rect x="24" y="132" width="200" height="12" rx="6" fill="#FFFFFF" fill-opacity="0.14"/>
+    <rect x="24" y="158" width="160" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    <rect x="24" y="180" width="180" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    <rect x="24" y="202" width="140" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    <rect x="260" y="128" width="836" height="88" rx="16" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="1"/>
+    <rect x="284" y="150" width="360" height="12" rx="6" fill="#FFFFFF" fill-opacity="0.12"/>
+    <rect x="284" y="176" width="560" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.07"/>
+  </g>
+
+  <!-- After -->
+  <rect x="80" y="476" width="88" height="30" rx="15" fill="#5EEAD4" fill-opacity="0.12" stroke="#5EEAD4" stroke-width="1"/>
+  <text class="pill" x="124" y="496" text-anchor="middle" fill="#5EEAD4">AFTER</text>
+  <g transform="translate(80 518)">
+    <!-- Window frame (glass surface, depth 1) -->
+    <rect width="1120" height="240" rx="22" fill="#FFFFFF" fill-opacity="0.06" stroke="#5EEAD4" stroke-opacity="0.45" stroke-width="1"/>
+    <!-- Window controls (neutral, not tied to any OS) -->
+    <circle cx="30" cy="34" r="6" fill="#FFFFFF" fill-opacity="0.22"/>
+    <circle cx="50" cy="34" r="6" fill="#FFFFFF" fill-opacity="0.22"/>
+    <circle cx="70" cy="34" r="6" fill="#FFFFFF" fill-opacity="0.22"/>
+    <!-- Toolbar (depth 2) merged with the active tab -->
+    <path d="M1 60 H86 Q100 60 100 48 V24 Q100 12 114 12 H346 Q360 12 360 24 V48 Q360 60 374 60 H1119 V116 H1 Z" fill="#FFFFFF" fill-opacity="0.08"/>
+    <!-- Active tab -->
+    <rect x="122" y="27" width="16" height="16" rx="5" fill="#7FD6E0"/>
+    <text class="tab-active" x="150" y="41">Mail – work</text>
+    <path d="M336 30 L346 40 M346 30 L336 40" stroke="#C9DEDC" stroke-opacity="0.7" stroke-width="2" stroke-linecap="round"/>
+    <!-- Inactive tabs -->
+    <rect x="392" y="27" width="16" height="16" rx="5" fill="#FFB783"/>
+    <text class="tab" x="420" y="41">Sales dashboard</text>
+    <line x1="630" y1="24" x2="630" y2="46" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+    <rect x="652" y="27" width="16" height="16" rx="5" fill="#B9A8F0"/>
+    <text class="tab" x="680" y="41">Ops dashboard</text>
+    <line x1="890" y1="24" x2="890" y2="46" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.5"/>
+    <text class="tab" x="912" y="42" font-size="22">+</text>
+    <!-- Address bar (depth 3) -->
+    <rect x="24" y="70" width="1072" height="36" rx="18" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1"/>
+    <text class="url" x="48" y="94">mail.example.com/inbox</text>
+    <path d="M1062 77 H1074 V99 L1068 94 L1062 99 Z" fill="#FB8742"/>
+    <!-- Page content skeleton -->
+    <rect x="24" y="132" width="200" height="12" rx="6" fill="#FFFFFF" fill-opacity="0.14"/>
+    <rect x="24" y="158" width="160" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    <rect x="24" y="180" width="180" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    <rect x="24" y="202" width="140" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    <rect x="260" y="128" width="836" height="88" rx="16" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="1"/>
+    <rect x="284" y="150" width="360" height="12" rx="6" fill="#FFFFFF" fill-opacity="0.12"/>
+    <rect x="284" y="176" width="560" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.07"/>
+  </g>
+</svg>

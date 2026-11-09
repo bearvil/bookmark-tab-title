@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Bookmark-Tab Title</title>
+  <!-- Full-bleed variant for toolbar and extension pages (16, 32, 48 px). Drawn on a 32 grid so it stays crisp at 16 px. -->
+  <rect width="32" height="32" rx="7" fill="#083F47"/>
+  <!-- Browser tab: rounded top, flared feet on the baseline -->
+  <path d="M2 26 Q6 26 6 22 V11 Q6 8 9 8 H23 Q26 8 26 11 V22 Q26 26 30 26 Z" fill="#5EEAD4"/>
+  <!-- Title line -->
+  <rect x="9" y="14" width="6" height="2" rx="1" fill="#083F47"/>
+  <!-- Gap that separates the ribbon from the tab -->
+  <path d="M16.5 8 H25.5 V25.5 L21 21.5 L16.5 25.5 Z" fill="#083F47"/>
+  <!-- Bookmark ribbon -->
+  <path d="M18 6 H24 V22 L21 19 L18 22 Z" fill="#FB8742"/>
+</svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280" width="440" height="280">
+  <title>Bookmark-Tab Title: small promo tile</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&amp;display=block');
+      text { font-family: 'Nunito', 'Avenir Next', system-ui, sans-serif; }
+      .title { font-size: 31px; font-weight: 800; letter-spacing: -0.5px; fill: #F5F4FB; }
+      .accent { fill: #5EEAD4; }
+      .tagline { font-size: 15px; font-weight: 600; fill: #C9DEDC; }
+      .tab-muted { font-size: 13px; font-weight: 700; fill: #9DB9B7; }
+      .tab-active { font-size: 13px; font-weight: 800; fill: #F5F4FB; }
+    </style>
+    <!-- Background: Astra palette, dark variant -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#002E34"/>
+      <stop offset="0.2" stop-color="#0D2122"/>
+      <stop offset="0.45" stop-color="#002E34"/>
+      <stop offset="0.65" stop-color="#144E4E"/>
+      <stop offset="0.85" stop-color="#093537"/>
+      <stop offset="1" stop-color="#002E34"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#5EEAD4" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#5EEAD4" stop-opacity="0"/>
+    </radialGradient>
+    <!-- App icon (same geometry as icons/icon-toolbar.svg) -->
+    <symbol id="icon" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="7" fill="#083F47"/>
+      <rect x="0.25" y="0.25" width="31.5" height="31.5" rx="6.75" fill="none" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="0.5"/>
+      <path d="M2 26 Q6 26 6 22 V11 Q6 8 9 8 H23 Q26 8 26 11 V22 Q26 26 30 26 Z" fill="#5EEAD4"/>
+      <rect x="9" y="14" width="6" height="2" rx="1" fill="#083F47"/>
+      <path d="M16.5 8 H25.5 V25.5 L21 21.5 L16.5 25.5 Z" fill="#083F47"/>
+      <path d="M18 6 H24 V22 L21 19 L18 22 Z" fill="#FB8742"/>
+    </symbol>
+  </defs>
+
+  <rect width="440" height="280" fill="url(#bg)"/>
+
+  <!-- Icon with a soft glow -->
+  <circle cx="76" cy="80" r="70" fill="url(#glow)"/>
+  <use href="#icon" x="36" y="40" width="80" height="80"/>
+
+  <!-- Name, one word in the accent colour -->
+  <text class="title" x="136" y="76">Bookmark-Tab</text>
+  <text class="title accent" x="136" y="112">Title</text>
+
+  <text class="tagline" x="36" y="160">Tabs named the way you named your bookmarks.</text>
+
+  <!-- Mini tab strip: generic title becomes the bookmark name -->
+  <g transform="translate(36 196)">
+    <!-- Before: muted ghost tab -->
+    <path d="M0 44 Q8 44 8 36 V12 Q8 4 16 4 H140 Q148 4 148 12 V36 Q148 44 156 44 Z" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1"/>
+    <circle cx="28" cy="25" r="6" fill="#9DB9B7" fill-opacity="0.6"/>
+    <text class="tab-muted" x="42" y="30">Inbox (3)</text>
+
+    <!-- Arrow -->
+    <path d="M170 25 H194 M187 18 L195 25 L187 32" fill="none" stroke="#5EEAD4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- After: active tab with the bookmark name -->
+    <path d="M206 44 Q214 44 214 36 V12 Q214 4 222 4 H352 Q360 4 360 12 V36 Q360 44 368 44 Z" fill="#FFFFFF" fill-opacity="0.14" stroke="#5EEAD4" stroke-opacity="0.7" stroke-width="1"/>
+    <circle cx="234" cy="25" r="6" fill="#9DB9B7" fill-opacity="0.6"/>
+    <text class="tab-active" x="248" y="30">Mail – work</text>
+    <path d="M334 4 H344 V24 L339 20 L334 24 Z" fill="#FB8742"/>
+  </g>
+</svg>
