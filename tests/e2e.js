@@ -18,6 +18,7 @@ const routes = {
   '/landing': page('Landing'),
   '/slash/': page('Slash'),
   '/spa': page('SPA'),
+  '/attacker': page('Attacker'),
   // Like Gmail: the page keeps changing its own title.
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
@@ -28,10 +29,20 @@ const server = http.createServer((req, res) => {
     res.writeHead(302, { location: '/landing' }).end();
     return;
   }
+  // Same server, different site (127.0.0.1 → localhost), like a link shortener.
+  if (pathname === '/xredir') {
+    res.writeHead(302, { location: `http://localhost:${server.address().port}/landing` }).end();
+    return;
+  }
+  // A bookmarked page that answers slowly, so a navigation to it can be aborted.
+  if (pathname === '/slow') {
+    setTimeout(() => res.writeHead(200, { 'content-type': 'text/html' }).end(page('Slow')), 3000);
+    return;
+  }
   const html = routes[pathname];
   res.writeHead(html ? 200 : 404, { 'content-type': 'text/html; charset=utf-8' }).end(html ?? 'not found');
 });
-await new Promise((r) => server.listen(0, '127.0.0.1', r));
+await new Promise((r) => server.listen(0, r));
 const base = `http://127.0.0.1:${server.address().port}`;
 
 const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'btt-e2e-'));
@@ -41,6 +52,11 @@ const context = await chromium.launchPersistentContext(userDataDir, {
   args: [`--disable-extensions-except=${EXT_DIR}`, `--load-extension=${EXT_DIR}`],
 });
 const sw = context.serviceWorkers()[0] ?? (await context.waitForEvent('serviceworker'));
+// The worker can be reported before its extension APIs are ready.
+for (let i = 0; !(await sw.evaluate(() => !!globalThis.chrome?.bookmarks).catch(() => false)); i++) {
+  if (i > 100) throw new Error('extension APIs never became ready');
+  await new Promise((r) => setTimeout(r, 50));
+}
 const bookmark = {
   create: (title, url) => sw.evaluate(([t, u]) => chrome.bookmarks.create({ parentId: '1', title: t, url: u }).then((b) => b.id), [title, url]),
   rename: (id, title) => sw.evaluate(([i, t]) => chrome.bookmarks.update(i, { title: t }), [id, title]),
@@ -122,6 +138,40 @@ await check('SPA navigation (pushState) inside a bookmark → name stays', async
   await tab.evaluate(() => history.pushState({}, '', '/spa/detail'));
   await tab.waitForTimeout(500);
   await expectTitle(tab, 'App');
+});
+await check('aborted navigation to a bookmark does not leak its name to the page', async () => {
+  await bookmark.create('Secret name', `${base}/slow`);
+  await tab.goto(`${base}/attacker`);
+  await tab.evaluate(() => {
+    location.href = '/slow';
+    setTimeout(() => {
+      window.stop();
+      history.pushState({}, '', '/attacker/next');
+    }, 300);
+  });
+  await tab.waitForTimeout(1500);
+  await expectTitle(tab, 'Attacker');
+});
+await check('redirect to another site does not carry the bookmark name', async () => {
+  await bookmark.create('Shortener', `${base}/xredir`);
+  await tab.goto(`${base}/xredir`);
+  if (!tab.url().startsWith('http://localhost:')) throw new Error(`not redirected: ${tab.url()}`);
+  await tab.waitForTimeout(500);
+  await expectTitle(tab, 'Landing');
+});
+await check('second copy of the content script (extension update) restores the right title', async () => {
+  const id = await bookmark.create('Twice', `${base}/plain`);
+  await tab.goto(`${base}/plain`);
+  await expectTitle(tab, 'Twice');
+  await sw.evaluate(async (url) => {
+    const [t] = await chrome.tabs.query({ url });
+    await chrome.scripting.executeScript({ target: { tabId: t.id }, files: ['src/content.js'] });
+  }, `${base}/plain`);
+  await bookmark.rename(id, 'Twice renamed');
+  await expectTitle(tab, 'Twice renamed');
+  await bookmark.remove(id);
+  await tab.waitForTimeout(300);
+  await expectTitle(tab, 'Original');
 });
 await check('another tab without a bookmark is not affected', async () => {
   const other = await context.newPage();

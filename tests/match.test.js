@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildIndex, findTitle, normalizeUrl } from '../src/match.js';
+import { buildIndex, findTitle, normalizeUrl, originOf, siteOf } from '../src/match.js';
 
 const tree = [
   {
@@ -54,4 +54,25 @@ test('blank bookmark names are skipped', () => {
 test('URL before a redirect as the second candidate', () => {
   assert.equal(findTitle(index, 'https://example.com/login', 'http://example.com/'), 'Example');
   assert.equal(findTitle(index, 'https://unknown.example/', undefined), null);
+});
+
+test('siteOf groups subdomains of one site', () => {
+  assert.equal(siteOf('https://accounts.example.com/login'), 'example.com');
+  assert.equal(siteOf('https://www.example.co.uk/a'), 'example.co.uk');
+  assert.equal(siteOf('https://shop.example.hr/'), 'example.hr');
+});
+
+test('siteOf keeps IPs and single-label hosts as they are', () => {
+  assert.equal(siteOf('http://127.0.0.1:8080/'), '127.0.0.1');
+  assert.equal(siteOf('http://localhost:3000/'), 'localhost');
+  assert.equal(siteOf('not a url'), null);
+});
+
+test('different sites differ, e.g. a link shortener and its target', () => {
+  assert.notEqual(siteOf('https://bit.ly/xyz'), siteOf('https://other-site.com/'));
+});
+
+test('originOf', () => {
+  assert.equal(originOf('https://example.com/a?b#c'), 'https://example.com');
+  assert.equal(originOf('nope'), null);
 });

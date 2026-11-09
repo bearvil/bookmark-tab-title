@@ -16,6 +16,32 @@ export function normalizeUrl(raw) {
   return `${host}${port}${path}${url.search}`;
 }
 
+// Second-level labels under a two-letter country code, e.g. "example.co.uk" is one site.
+const SECOND_LEVEL = new Set(['ac', 'co', 'com', 'edu', 'gov', 'net', 'org']);
+
+// Approximate registrable domain ("accounts.example.com" → "example.com"); IPs and single-label hosts as they are.
+export function siteOf(raw) {
+  let host;
+  try {
+    host = new URL(raw).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+  if (!host.includes('.') || host.includes(':') || /^[\d.]+$/.test(host)) return host;
+  const labels = host.split('.');
+  const tld = labels.at(-1);
+  const keep = labels.length > 2 && tld.length === 2 && SECOND_LEVEL.has(labels.at(-2)) ? 3 : 2;
+  return labels.slice(-keep).join('.');
+}
+
+export function originOf(raw) {
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return null;
+  }
+}
+
 // Index built from chrome.bookmarks.getTree(). For duplicates the first one in the tree wins (the bookmarks bar comes first).
 export function buildIndex(tree) {
   const exact = new Map();

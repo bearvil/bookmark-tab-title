@@ -6,7 +6,7 @@ Rename a bookmark to "Mail – work" and the tab is called exactly that, even wh
 
 ## How it works
 - Matches the tab URL against your bookmarks: exact match first, then ignoring the protocol, `www.`, the `#fragment` and a trailing `/`.
-- Remembers the URL a navigation started from, so it also works when the page redirects (bookmark `example.com` → `example.com/login`).
+- Also works after a redirect within the same site (bookmark `example.com` → `example.com/login`) and through in-page navigation in single-page apps. A page on another site never gets your bookmark name.
 - Updates immediately when you add, rename or delete a bookmark. Deleting it restores the page's own title.
 - Everything happens locally. No network requests, no analytics, no account.
 
@@ -20,8 +20,15 @@ Rename a bookmark to "Mail – work" and the tab is called exactly that, even wh
 npm install
 npm test            # unit tests for URL matching
 npm run test:e2e    # real Chromium with the extension and real bookmarks (HEADED=1 to watch)
+npm run package     # store zip → dist/bookmark-tab-title-<version>.zip
 ```
 
 ## Limitations
 - Does not work on browser pages (`chrome://…`), in the Chrome Web Store or in the built-in PDF viewer, where browsers do not allow extensions to change content.
 - After in-page (SPA) navigation inside a page opened from a bookmark, the bookmark name stays until the page loads a different URL.
+
+## Privacy
+No data is collected and nothing leaves your browser. See the [privacy policy](https://bearvil.github.io/privacy-policies/bookmark-tab-title-pp).
+
+## License
+[MIT](LICENSE) © Bearvil
