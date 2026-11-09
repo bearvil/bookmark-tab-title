@@ -1,0 +1,99 @@
+/* Design tokens — the only place with colors, radii, spacing and type sizes.
+   Bearvil "Astra" palette (teal-black, mint accent), dark and light, following the system theme. */
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../../fonts/nunito-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+    U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../../fonts/nunito-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Atmosphere */
+  --base: #002e34;
+  --gradient: linear-gradient(135deg, #002e34 0%, #0d2122 20%, #002e34 45%, #144e4e 65%, #093537 85%, #002e34 100%);
+  --accent: #5eead4;
+  --accent-text: #04211f;
+  --accent-soft: rgba(94, 234, 212, 0.14);
+  --brand-ribbon: #fb8742;
+
+  /* Text roles (secondary/tertiary are tinted towards the accent) */
+  --text-primary: #f5f4fb;
+  --text-secondary: rgba(218, 242, 244, 0.72);
+  --text-tertiary: rgba(206, 241, 241, 0.45);
+  --text-danger: #ff8a8a;
+
+  /* Elevation: each level a step lighter, paired with a hairline */
+  --surface-1: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.1);
+  --surface-3: rgba(255, 255, 255, 0.15);
+  --border-1: rgba(255, 255, 255, 0.14);
+  --border-2: rgba(255, 255, 255, 0.12);
+  --divider: rgba(255, 255, 255, 0.12);
+  --switch-off: rgba(206, 241, 241, 0.32);
+  --switch-thumb: #f5f4fb;
+  --shadow-soft: 0 10px 18px rgba(0, 0, 0, 0.35);
+
+  /* Shape and rhythm */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-round: 999px;
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --hairline: 1px;
+
+  /* Type */
+  --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-micro: 12px;
+  --text-caption: 13px;
+  --text-body: 15px;
+  --text-title: 17px;
+  --text-large-title: 19px;
+  --text-display: 26px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --base: #e1efee;
+    --gradient: linear-gradient(135deg, #e1efee 0%, #d8e3e2 20%, #e1efee 45%, #cff3e8 65%, #dcebe9 85%, #e1efee 100%);
+    --accent: #00666b;
+    --accent-text: #ffffff;
+    --accent-soft: rgba(0, 102, 107, 0.1);
+    --text-primary: #1a1430;
+    --text-secondary: rgba(21, 35, 59, 0.72);
+    --text-tertiary: rgba(19, 41, 63, 0.42);
+    --text-danger: #d14b5c;
+    --surface-1: rgba(255, 255, 255, 0.6);
+    --surface-2: rgba(255, 255, 255, 0.73);
+    --surface-3: rgba(255, 255, 255, 0.83);
+    --border-1: rgba(20, 40, 60, 0.12);
+    --border-2: rgba(20, 40, 60, 0.11);
+    --divider: rgba(20, 40, 60, 0.1);
+    --switch-off: rgba(19, 41, 63, 0.3);
+    --switch-thumb: #ffffff;
+    --shadow-soft: 0 10px 18px rgba(26, 20, 48, 0.14);
+  }
+}
