@@ -20,6 +20,7 @@ Rename a bookmark to "Mail – work" and the tab is called exactly that, even wh
 npm install
 npm test            # unit tests for URL matching
 npm run test:e2e    # real Chromium with the extension and real bookmarks (HEADED=1 to watch)
+npm run try         # visible Chromium with the extension and sample bookmarks, throwaway profile
 npm run package     # store zip → dist/bookmark-tab-title-<version>.zip
 ```
 

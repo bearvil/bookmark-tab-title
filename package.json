@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test tests/match.test.js tests/manifest.test.js",
     "test:e2e": "node tests/e2e.js",
+    "try": "node scripts/try.js",
     "package": "rm -rf dist && mkdir -p dist && zip -qr dist/bookmark-tab-title-$npm_package_version.zip manifest.json LICENSE src _locales icons -x 'icons/*.svg' -x '*.DS_Store'"
   },
   "devDependencies": {
