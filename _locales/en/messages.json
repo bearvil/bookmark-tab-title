@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Bookmark-Tab Title",
+    "description": "Extension name shown in the browser and the store."
+  },
+  "extDescription": {
+    "message": "Shows the name of your bookmark as the tab title whenever a bookmarked page is open.",
+    "description": "Short description shown in the browser and the store (max 132 characters)."
+  }
+}
