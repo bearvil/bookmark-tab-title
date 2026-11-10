@@ -13,7 +13,17 @@ globalThis.chrome = {
     onChanged: { addListener() {} },
   },
 };
-const { getAllScopes, getAppendPageTitle, getScope, migrateSettings, setAppendPageTitle, setScope } = await import(
+const {
+  getAllScopes,
+  getAppendPageTitle,
+  getPageTitleFor,
+  getScope,
+  getTitleOverrides,
+  migrateSettings,
+  setAppendPageTitle,
+  setPageTitleFor,
+  setScope,
+} = await import(
   '../src/settings.js'
 );
 
@@ -65,4 +75,18 @@ test('the page title option is off by default, stored only while on, and not a s
   assert.deepEqual(await getAllScopes(), new Map());
   await setAppendPageTitle(false);
   assert.equal(store.size, 0);
+});
+
+test("a bookmark's own page title choice overrides the option for every bookmark, stored only when different", async () => {
+  store.clear();
+  await setPageTitleFor('https://www.e.com/a/', true);
+  assert.equal(await getPageTitleFor('https://e.com/a'), true);
+  assert.equal(await getPageTitleFor('https://e.com/b'), false);
+  await setAppendPageTitle(true);
+  assert.equal(await getPageTitleFor('https://e.com/b'), true);
+  await setPageTitleFor('https://e.com/b', false);
+  assert.deepEqual(await getTitleOverrides(), new Map([['e.com/a', true], ['e.com/b', false]]));
+  await setPageTitleFor('https://e.com/b', true);
+  assert.deepEqual(await getTitleOverrides(), new Map([['e.com/a', true]]));
+  assert.deepEqual(await getAllScopes(), new Map());
 });

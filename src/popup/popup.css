@@ -1,7 +1,7 @@
 /* Layout only — every visual comes from tokens.css and components.css. */
 body {
   width: 400px;
-  padding: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);

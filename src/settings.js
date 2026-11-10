@@ -46,8 +46,10 @@ export function onScopesChanged(callback) {
   });
 }
 
-// One option for every bookmark: add the page's own title after the bookmark name. Off by default (not stored).
+// Add the page's own title after the bookmark name: one option for every bookmark (off by default, not stored),
+// and per bookmark under its normalized URL, stored only where it differs from that option.
 const APPEND_KEY = 'appendPageTitle';
+const TITLE_PREFIX = 'title:';
 
 export async function getAppendPageTitle() {
   return (await chrome.storage.sync.get(APPEND_KEY))[APPEND_KEY] === true;
@@ -58,9 +60,35 @@ export async function setAppendPageTitle(on) {
   else await chrome.storage.sync.remove(APPEND_KEY);
 }
 
-export function onAppendPageTitleChanged(callback) {
+// Map of normalized bookmark URL → true/false for the bookmarks with their own choice.
+export async function getTitleOverrides() {
+  const all = await chrome.storage.sync.get(null);
+  return new Map(
+    Object.entries(all)
+      .filter(([k, v]) => k.startsWith(TITLE_PREFIX) && typeof v === 'boolean')
+      .map(([k, v]) => [k.slice(TITLE_PREFIX.length), v]),
+  );
+}
+
+// Whether the page title is added for this bookmark: its own choice, or the option for every bookmark.
+export async function getPageTitleFor(url) {
+  const key = normalizeUrl(url);
+  const [overrides, all] = await Promise.all([getTitleOverrides(), getAppendPageTitle()]);
+  return overrides.get(key) ?? all;
+}
+
+// A choice equal to the option for every bookmark is not stored, so the bookmark follows that option again.
+export async function setPageTitleFor(url, on) {
+  const key = normalizeUrl(url);
+  if (!key) return;
+  if (on === (await getAppendPageTitle())) await chrome.storage.sync.remove(TITLE_PREFIX + key);
+  else await chrome.storage.sync.set({ [TITLE_PREFIX + key]: on });
+}
+
+// The option for every bookmark or a bookmark's own choice changed.
+export function onPageTitleChanged(callback) {
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && APPEND_KEY in changes) callback();
+    if (area === 'sync' && Object.keys(changes).some((k) => k === APPEND_KEY || k.startsWith(TITLE_PREFIX))) callback();
   });
 }
 

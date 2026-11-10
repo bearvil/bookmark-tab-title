@@ -111,7 +111,7 @@
     "message": "Dodaj i izvorni naslov stranice"
   },
   "appendTitleHint": {
-    "message": "Tab prikazuje „naziv bookmarka — naslov stranice”, npr. „Mail — (3) Inbox”. Za sve bookmarke."
+    "message": "Tab prikazuje „naziv bookmarka — naslov stranice”, npr. „Mail — (3) Inbox”. Za sve bookmarke, osim onih s vlastitim izborom („Naslov stranice” u retku ili u izborniku proširenja)."
   },
   "viewLabel": {
     "message": "Prikaz"
@@ -165,6 +165,12 @@
         "content": "$1"
       }
     }
+  },
+  "pageTitleShort": {
+    "message": "Naslov stranice"
+  },
+  "pageTitleHint": {
+    "message": "Dodaj izvorni naslov stranice iza naziva, za ovaj bookmark. Nadjačava postavku za sve bookmarke."
   },
   "containsPlaceholder": {
     "message": "npr. /u/1/ ili authuser=1"

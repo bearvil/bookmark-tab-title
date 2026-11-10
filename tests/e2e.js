@@ -574,6 +574,47 @@ await check('page title option off again → only the bookmark name', async () =
   await expectTitle(mail, 'Mail');
   await mail.close();
 });
+await check('page title per bookmark (popup) overrides the option for every bookmark', async () => {
+  const mail = await context.newPage();
+  await mail.goto(`${base}/dyn`);
+  const pre = await context.newPage();
+  await pre.goto(`${base}/prefix`);
+  await expectTitle(mail, 'Mail');
+  const popup = await popupFor(`${base}/dyn`);
+  const before = await popup.isChecked('#page-title');
+  await popup.click('#page-title');
+  await popup.waitForTimeout(200);
+  await popup.close();
+  await expectTitleLike(mail, /^Mail — \(\d+\) Inbox$/);
+  await expectTitle(pre, 'Pre');
+  // On for every bookmark, off for this one.
+  await appendSwitch(true);
+  await expectTitleLike(pre, /^Pre — /);
+  const again = await popupFor(`${base}/dyn`);
+  const shown = await again.isChecked('#page-title');
+  await again.click('#page-title');
+  await again.waitForTimeout(200);
+  await again.close();
+  await expectTitle(mail, 'Mail');
+  await mail.close();
+  await pre.close();
+  if (before || !shown) throw new Error(JSON.stringify({ before, shown }));
+});
+await check('page title per bookmark (settings row) shows the choice and changes it', async () => {
+  const mail = await context.newPage();
+  await mail.goto(`${base}/dyn`);
+  const [options, row] = await optionsRow('Mail');
+  const off = await row.locator('[data-field="page-title"]').isChecked();
+  const preOn = await optionsRow('Pre').then(async ([o, r]) => (await r.locator('[data-field="page-title"]').isChecked()) && (await o.close(), true));
+  await row.locator('[data-field="page-title"]').click();
+  await options.waitForTimeout(200);
+  await options.close();
+  await expectTitleLike(mail, /^Mail — /);
+  await mail.close();
+  const own = await sw.evaluate(async () => Object.keys(await chrome.storage.sync.get(null)).filter((k) => k.startsWith('title:')));
+  await appendSwitch(false);
+  if (off || !preOn || own.length) throw new Error(JSON.stringify({ off, preOn, own }));
+});
 await check('context menu has one item per scope (clicking native menus is not scriptable)', async () => {
   // update() rejects for an unknown menu id.
   await sw.evaluate(() => Promise.all(['exact', 'below', 'contains', 'host'].map((s) => chrome.contextMenus.update(`scope-${s}`, {}))));

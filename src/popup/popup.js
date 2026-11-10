@@ -1,6 +1,6 @@
 // Popup (A): the bookmark that names the page in the current tab, and how far its name reaches.
 import { hostOf, normalizeUrl, suggestText } from '../match.js';
-import { getScope, setScope } from '../settings.js';
+import { getPageTitleFor, getScope, onPageTitleChanged, setPageTitleFor, setScope } from '../settings.js';
 import { localize, t } from '../ui/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -26,6 +26,12 @@ async function render() {
   if (!state.bookmark) return show('state-none');
   show('state-bookmark');
   paint();
+  showPageTitle();
+}
+
+// This bookmark's "add the page title": its own choice, else the option for every bookmark.
+async function showPageTitle() {
+  if (state?.bookmark) $('page-title').checked = await getPageTitleFor(state.bookmark.url);
 }
 
 // After a change the popup stays on the bookmark it opened with, even when the tab is now named by another one
@@ -116,6 +122,13 @@ $('contains-text').addEventListener('blur', () => textTimer && saveText());
 $('contains-text').addEventListener('keydown', (event) => {
   if (event.key === 'Enter') saveText().then(() => window.close());
 });
+
+$('page-title').addEventListener('change', async (event) => {
+  if (!state?.bookmark) return;
+  await setPageTitleFor(state.bookmark.url, event.target.checked);
+  flashSaved();
+});
+onPageTitleChanged(showPageTitle);
 
 $('add-bookmark').addEventListener('click', async () => {
   const [root] = await chrome.bookmarks.getTree();

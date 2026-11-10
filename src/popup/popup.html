@@ -26,11 +26,17 @@
     <main id="state-bookmark" class="stack" hidden>
       <section class="surface">
         <div class="row row--stack">
-          <label class="field-label" for="name">
-            <span class="text-caption tone-secondary" data-i18n="fieldName"></span>
-            <span id="saved" class="text-micro toast" data-visible="false" data-i18n="saved"></span>
-          </label>
-          <input id="name" class="field" type="text" autocomplete="off" spellcheck="false" />
+          <div class="field-label">
+            <label class="text-caption tone-secondary" for="name" data-i18n="fieldName"></label>
+            <label class="inline-switch text-caption tone-secondary" data-i18n-attr="title:pageTitleHint">
+              <span data-i18n="pageTitleShort"></span>
+              <input id="page-title" class="switch switch--small" type="checkbox" role="switch" data-i18n-attr="aria-label:pageTitleHint" />
+            </label>
+          </div>
+          <span class="field-wrap">
+            <input id="name" class="field" type="text" autocomplete="off" spellcheck="false" />
+            <span id="saved" class="text-micro toast field-wrap__note" data-visible="false" data-i18n="saved"></span>
+          </span>
           <p id="shown-because" class="text-caption tone-secondary truncate" hidden></p>
         </div>
       </section>

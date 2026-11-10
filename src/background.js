@@ -1,9 +1,10 @@
-import { buildIndex, hostOf, nextTrail, originOf, resolve, SCOPES, siteOf, suggestText } from './match.js';
+import { buildIndex, hostOf, nextTrail, normalizeUrl, originOf, resolve, SCOPES, siteOf, suggestText } from './match.js';
 import {
   getAllScopes,
   getAppendPageTitle,
+  getTitleOverrides,
   migrateSettings,
-  onAppendPageTitleChanged,
+  onPageTitleChanged,
   onScopesChanged,
   setScope,
 } from './settings.js';
@@ -14,6 +15,7 @@ const MENU_PREFIX = 'scope-';
 let indexPromise = null;
 let scopesPromise = null;
 let appendPromise = null;
+let overridesPromise = null;
 
 function getIndex() {
   indexPromise ??= chrome.bookmarks.getTree().then(buildIndex);
@@ -28,6 +30,11 @@ function getScopes() {
 function getAppend() {
   appendPromise ??= getAppendPageTitle();
   return appendPromise;
+}
+
+function getOverrides() {
+  overridesPromise ??= getTitleOverrides();
+  return overridesPromise;
 }
 
 // Per-tab state, in storage.session because the service worker shuts down when idle:
@@ -73,10 +80,12 @@ async function tabState(tab) {
 
 const titleOf = (state) => state.bookmark?.title ?? null;
 
-// What the content script needs: the bookmark name, and whether the page's own title goes after it.
+// What the content script needs: the bookmark name, and whether the page's own title goes after it (the
+// bookmark's own choice, else the option for every bookmark).
 async function titleMessage(tab) {
-  const [state, append] = await Promise.all([tabState(tab), getAppend()]);
-  return { title: titleOf(state), append };
+  const [state, all, overrides] = await Promise.all([tabState(tab), getAppend(), getOverrides()]);
+  const own = state.bookmark ? overrides.get(normalizeUrl(state.bookmark.url)) : undefined;
+  return { title: titleOf(state), append: own ?? all };
 }
 
 async function pushTitle(tab) {
@@ -109,6 +118,7 @@ function onBookmarksChanged() {
 function onSettingsChanged() {
   scopesPromise = null;
   appendPromise = null;
+  overridesPromise = null;
   scheduleRefresh();
 }
 
@@ -215,7 +225,7 @@ chrome.bookmarks.onImportEnded.addListener(() => {
   onBookmarksChanged();
 });
 onScopesChanged(onSettingsChanged);
-onAppendPageTitleChanged(onSettingsChanged);
+onPageTitleChanged(onSettingsChanged);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'get-title' && sender.tab && sender.frameId === 0) {

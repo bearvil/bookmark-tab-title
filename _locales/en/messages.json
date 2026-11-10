@@ -113,7 +113,7 @@
     "message": "Add the page's own title"
   },
   "appendTitleHint": {
-    "message": "The tab shows “bookmark name — page title”, e.g. “Mail — (3) Inbox”. For every bookmark."
+    "message": "The tab shows “bookmark name — page title”, e.g. “Mail — (3) Inbox”. For every bookmark, unless it has its own choice (“Page title” in its row or in the popup)."
   },
   "viewLabel": {
     "message": "View"
@@ -167,6 +167,12 @@
         "content": "$1"
       }
     }
+  },
+  "pageTitleShort": {
+    "message": "Page title"
+  },
+  "pageTitleHint": {
+    "message": "Add the page's own title after the name, for this bookmark. Overrides the setting for every bookmark."
   },
   "containsPlaceholder": {
     "message": "e.g. /u/1/ or authuser=1"

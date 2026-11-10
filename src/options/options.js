@@ -1,6 +1,15 @@
 // Options page (B): every web bookmark with how far its name reaches, by folder or as one list.
 import { hostOf, normalizeUrl, SCOPES, suggestText } from '../match.js';
-import { getAllScopes, getAppendPageTitle, onAppendPageTitleChanged, onScopesChanged, setAppendPageTitle, setScope } from '../settings.js';
+import {
+  getAllScopes,
+  getAppendPageTitle,
+  getTitleOverrides,
+  onPageTitleChanged,
+  onScopesChanged,
+  setAppendPageTitle,
+  setPageTitleFor,
+  setScope,
+} from '../settings.js';
 import { localize, t } from '../ui/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -21,6 +30,8 @@ const editId = new URLSearchParams(location.search).get('edit');
 let view = { mode: 'folders', sort: 'browser', open: [] };
 let data = { folders: [], all: [] };
 let scopes = new Map();
+// The page title option: for every bookmark, and the bookmarks with their own choice.
+let pageTitle = { all: false, own: new Map() };
 
 async function loadView() {
   try {
@@ -55,6 +66,12 @@ async function loadBookmarks() {
 
 const isFolder = (node) => Array.isArray(node.children);
 const settingOf = (bookmark) => scopes.get(normalizeUrl(bookmark.url)) ?? { scope: 'exact' };
+const pageTitleOf = (key) => pageTitle.own.get(key) ?? pageTitle.all;
+
+async function loadPageTitle() {
+  const [all, own] = await Promise.all([getAppendPageTitle(), getTitleOverrides()]);
+  pageTitle = { all, own };
+}
 
 function matcher() {
   const query = $('search').value.trim().toLowerCase();
@@ -112,6 +129,10 @@ function renderRow(bookmark) {
   text.placeholder = t('containsPlaceholder');
   text.setAttribute('aria-label', `${t('scope_contains')}: ${bookmark.title}`);
   showSetting(row, settingOf(bookmark));
+  const titleSwitch = row.querySelector('[data-field="page-title"]');
+  titleSwitch.setAttribute('aria-label', `${t('pageTitleShort')}: ${bookmark.title}`);
+  titleSwitch.checked = pageTitleOf(row.dataset.key);
+  titleSwitch.addEventListener('change', () => setPageTitleFor(bookmark.url, titleSwitch.checked));
 
   select.addEventListener('change', () => {
     if (select.value !== 'contains') return setScope(bookmark.url, select.value);
@@ -220,7 +241,7 @@ function paint(openIds = new Set(view.open)) {
 }
 
 async function render() {
-  [data, scopes] = await Promise.all([loadBookmarks(), getAllScopes()]);
+  [data, scopes] = await Promise.all([loadBookmarks(), getAllScopes(), loadPageTitle()]);
   paint();
 }
 
@@ -235,11 +256,15 @@ async function refreshScopes() {
 for (const value of FILTERS) $('filter').add(new Option(t(`filter_${value}`), value));
 for (const value of SORTS) $('sort').add(new Option(t(`sort_${value}`), value));
 
-// One switch for every bookmark: the page's own title after the bookmark name.
-const showAppend = async () => ($('append-page-title').checked = await getAppendPageTitle());
+// The page's own title after the bookmark name: one switch for every bookmark, and one in each row.
+async function showPageTitle() {
+  await loadPageTitle();
+  $('append-page-title').checked = pageTitle.all;
+  for (const row of document.querySelectorAll('li[data-key]')) row.querySelector('[data-field="page-title"]').checked = pageTitleOf(row.dataset.key);
+}
 $('append-page-title').addEventListener('change', (e) => setAppendPageTitle(e.target.checked));
-onAppendPageTitleChanged(showAppend);
-showAppend();
+onPageTitleChanged(showPageTitle);
+showPageTitle();
 
 $('search').addEventListener('input', () => paint());
 $('filter').addEventListener('change', () => paint());
