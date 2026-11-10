@@ -3,29 +3,29 @@
 // differ per device) as { scope, text }; "exact" is the default and is not stored.
 import { normalizeUrl, SCOPES } from './match.js';
 
-const PREFIX = 'scope:';
+export const SCOPE_PREFIX = 'scope:';
 // Before 1.0.0 there was only an on/off switch for the whole host.
 const OLD_PREFIX = 'keepOnHost:';
 
 const keyFor = (url) => {
   const key = normalizeUrl(url);
-  return key && PREFIX + key;
+  return key && SCOPE_PREFIX + key;
 };
 
-const clean = (value) => {
+export const cleanScope = (value) => {
   const scope = SCOPES.includes(value?.scope) ? value.scope : 'exact';
   return scope === 'contains' ? { scope, text: String(value.text ?? '').trim() } : { scope };
 };
 
 export async function getScope(url) {
   const key = keyFor(url);
-  return clean(key ? (await chrome.storage.sync.get(key))[key] : null);
+  return cleanScope(key ? (await chrome.storage.sync.get(key))[key] : null);
 }
 
 export async function setScope(url, scope, text = '') {
   const key = keyFor(url);
   if (!key) return;
-  const value = clean({ scope, text });
+  const value = cleanScope({ scope, text });
   if (value.scope === 'exact') await chrome.storage.sync.remove(key);
   else await chrome.storage.sync.set({ [key]: value });
 }
@@ -35,21 +35,21 @@ export async function getAllScopes() {
   const all = await chrome.storage.sync.get(null);
   return new Map(
     Object.entries(all)
-      .filter(([k]) => k.startsWith(PREFIX))
-      .map(([k, v]) => [k.slice(PREFIX.length), clean(v)]),
+      .filter(([k]) => k.startsWith(SCOPE_PREFIX))
+      .map(([k, v]) => [k.slice(SCOPE_PREFIX.length), cleanScope(v)]),
   );
 }
 
 export function onScopesChanged(callback) {
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && Object.keys(changes).some((k) => k.startsWith(PREFIX))) callback();
+    if (area === 'sync' && Object.keys(changes).some((k) => k.startsWith(SCOPE_PREFIX))) callback();
   });
 }
 
 // Add the page's own title after the bookmark name: one option for every bookmark (off by default, not stored),
 // and per bookmark under its normalized URL, stored only where it differs from that option.
-const APPEND_KEY = 'appendPageTitle';
-const TITLE_PREFIX = 'title:';
+export const APPEND_KEY = 'appendPageTitle';
+export const TITLE_PREFIX = 'title:';
 
 export async function getAppendPageTitle() {
   return (await chrome.storage.sync.get(APPEND_KEY))[APPEND_KEY] === true;
@@ -100,7 +100,7 @@ export async function migrateSettings() {
   if (!old.length) return;
   const moved = Object.fromEntries(
     old
-      .map((k) => [k, PREFIX + k.slice(OLD_PREFIX.length)])
+      .map((k) => [k, SCOPE_PREFIX + k.slice(OLD_PREFIX.length)])
       .filter(([k, key]) => all[k] === true && !(key in all))
       .map(([, key]) => [key, { scope: 'host' }]),
   );

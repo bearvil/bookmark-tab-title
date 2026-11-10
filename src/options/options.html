@@ -61,6 +61,30 @@
         </div>
       </section>
 
+      <section class="surface" aria-labelledby="backup-title">
+        <div class="row row--wrap">
+          <span class="row__main">
+            <span id="backup-title" class="text-body text-strong" data-i18n="backupTitle"></span>
+            <span class="text-caption tone-secondary" data-i18n="backupHint"></span>
+          </span>
+          <span class="actions">
+            <button id="export" class="button button--ghost button--compact" type="button" data-i18n="exportButton"></button>
+            <button id="import" class="button button--ghost button--compact" type="button" data-i18n="importButton"></button>
+          </span>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </div>
+        <div id="import-review" class="row row--stack" hidden>
+          <p id="import-summary" class="text-body"></p>
+          <span class="actions">
+            <button id="import-apply" class="button button--primary button--compact" type="button" data-i18n="importApply"></button>
+            <button id="import-cancel" class="button button--ghost button--compact" type="button" data-i18n="importCancel"></button>
+          </span>
+        </div>
+        <div id="backup-status-row" class="row" hidden>
+          <p id="backup-status" class="text-caption" role="status"></p>
+        </div>
+      </section>
+
       <details id="how" class="surface how folder">
         <summary class="row folder__head">
           <span class="folder__chevron" aria-hidden="true"></span>

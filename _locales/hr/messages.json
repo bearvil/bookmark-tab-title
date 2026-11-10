@@ -172,6 +172,85 @@
   "pageTitleHint": {
     "message": "Dodaj izvorni naslov stranice iza naziva, za ovaj bookmark. Nadjačava postavku za sve bookmarke."
   },
+  "backupTitle": {
+    "message": "Datoteka s postavkama"
+  },
+  "backupHint": {
+    "message": "Spremi doseg naziva i izbore naslova stranice u datoteku ili ih učitaj iz nje, npr. u drugom pregledniku. Vrijede za svaki bookmark s istom adresom."
+  },
+  "exportButton": {
+    "message": "Izvezi"
+  },
+  "importButton": {
+    "message": "Uvezi"
+  },
+  "importApply": {
+    "message": "Primijeni"
+  },
+  "importCancel": {
+    "message": "Odustani"
+  },
+  "importSummary": {
+    "message": "U datoteci je postavki: $TOTAL$. Za tvoje bookmarke: $MATCH$, za adrese koje još nemaš: $OTHER$ (proradit će kad dodaš bookmark).",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "match": {
+        "content": "$2"
+      },
+      "other": {
+        "content": "$3"
+      }
+    }
+  },
+  "importSummaryAll": {
+    "message": "Naslov stranice za sve bookmarke: $STATE$.",
+    "placeholders": {
+      "state": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateOn": {
+    "message": "uključen"
+  },
+  "stateOff": {
+    "message": "isključen"
+  },
+  "importSkipped": {
+    "message": "Neispravnih unosa: $COUNT$, izostavljeni su.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDone": {
+    "message": "Uvezeno postavki: $COUNT$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportDone": {
+    "message": "Izvezeno postavki: $COUNT$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importErrorFile": {
+    "message": "Ovo nije datoteka s postavkama Bookmark-Tab Titlea."
+  },
+  "importErrorSize": {
+    "message": "Datoteka je prevelika (više od 1 MB)."
+  },
+  "importErrorQuota": {
+    "message": "U sinkroniziranom spremištu preglednika nema mjesta za ove postavke. Ništa nije promijenjeno."
+  },
   "containsPlaceholder": {
     "message": "npr. /u/1/ ili authuser=1"
   },

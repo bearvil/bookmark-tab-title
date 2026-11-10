@@ -5,7 +5,7 @@
   "description": "Chrome/Chromium extension that shows the bookmark name as the tab title",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/match.test.js tests/settings.test.js tests/manifest.test.js",
+    "test": "node --test tests/match.test.js tests/settings.test.js tests/backup.test.js tests/manifest.test.js",
     "test:e2e": "node tests/e2e.js",
     "try": "node scripts/try.js",
     "package": "rm -rf dist && mkdir -p dist && zip -qr dist/bookmark-tab-title-$npm_package_version.zip manifest.json LICENSE src _locales icons fonts -x '*.DS_Store'"

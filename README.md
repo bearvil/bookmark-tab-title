@@ -68,6 +68,7 @@ A page with a bookmark of its own shows that name, and the next page returns to 
 
 - **Toolbar popup**: the bookmark of the current page, its name, its reach and the page title switch.
 - **Settings page**: all bookmarks, by folder (collapsible, as in the browser) or as one list, filtered by reach and ordered as in the browser, by name, by site or by reach. The view, the order and the open folders are remembered on this device.
+- **Settings file**: export the scopes and page title choices to a JSON file and import them, e.g. into another browser or from the development build into the store version. Settings belong to a bookmark's address, so they apply to every bookmark with the same address, also one added later. An import shows a summary first and only replaces the settings of the addresses in the file.
 - **Right-click menu** on the page.
 
 **Add the page's own title** is off by default. Turn it on for all bookmarks on the settings page, or per bookmark with the "Page title" switch, which overrides the global option. The tab then follows the page as its title changes.

@@ -174,6 +174,85 @@
   "pageTitleHint": {
     "message": "Add the page's own title after the name, for this bookmark. Overrides the setting for every bookmark."
   },
+  "backupTitle": {
+    "message": "Settings file"
+  },
+  "backupHint": {
+    "message": "Save how far each name reaches and the page title choices to a file, or load them from one, e.g. in another browser. They apply to every bookmark with the same address."
+  },
+  "exportButton": {
+    "message": "Export"
+  },
+  "importButton": {
+    "message": "Import"
+  },
+  "importApply": {
+    "message": "Apply"
+  },
+  "importCancel": {
+    "message": "Cancel"
+  },
+  "importSummary": {
+    "message": "The file has $TOTAL$ settings: $MATCH$ for your bookmarks and $OTHER$ for addresses you have no bookmark for yet, which start working when you add one.",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "match": {
+        "content": "$2"
+      },
+      "other": {
+        "content": "$3"
+      }
+    }
+  },
+  "importSummaryAll": {
+    "message": "Page title for every bookmark: $STATE$.",
+    "placeholders": {
+      "state": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateOn": {
+    "message": "on"
+  },
+  "stateOff": {
+    "message": "off"
+  },
+  "importSkipped": {
+    "message": "Left out as not valid: $COUNT$.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDone": {
+    "message": "Imported $COUNT$ settings.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportDone": {
+    "message": "Exported $COUNT$ settings.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importErrorFile": {
+    "message": "This is not a Bookmark-Tab Title settings file."
+  },
+  "importErrorSize": {
+    "message": "The file is too large (over 1 MB)."
+  },
+  "importErrorQuota": {
+    "message": "There is not enough room in the browser's synced storage for these settings. Nothing was changed."
+  },
   "containsPlaceholder": {
     "message": "e.g. /u/1/ or authuser=1"
   },

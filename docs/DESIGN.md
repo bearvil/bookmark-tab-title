@@ -33,6 +33,8 @@ The popup and the settings page share one small design system. Pages only compos
 | `.switch--small`, `.inline-switch` | — | Small switch with a short label beside it, inline in a row or a label line ("Page title") |
 | `.field-wrap`, `.field-wrap__note` | — | A field with a status note ("Saved") inside it on the right |
 | `.field--dense` | — | A body-size field with less height (the popup's name field) |
+| `.button--compact`, `.actions` | — | A smaller button (36 px) for secondary actions in a row; `.actions` puts a few side by side |
+| `.tone-danger` | — | Text for an error, e.g. a file that cannot be imported |
 | `.segmented` | — | Two or three radio options in one pill, the chosen one filled with the accent (Folders / List) |
 | `.folder`, `.folder__head`, `.folder__list` | — | Collapsible folder (`<details>`): a `.row` summary with a chevron, name, pill and count; nested folders indent |
 | `.radio`, `.choices`, `.choice` | — | A surface of `.row` labels with a radio each; the selected row is tinted; `.choices--dense` for less height (the popup, which Chrome cuts at 600 px) |
@@ -48,7 +50,7 @@ Motion is limited to the switch, the radio and the toast and turns off with `pre
 
 ## Pages
 - **Popup** (`src/popup/`, 400 px wide; the content stays under Chrome's 600 px popup height): the bookmark that names the current tab (name field with its "Page title" switch, why it is shown, and the scope as a choice list with the "address contains" text), "not a bookmark" with a primary "Bookmark this page", or "not available here".
-- **Settings** (`src/options/`): heading, the "add the page's own title" switch (a surface with one `.row`), search, view (Folders / List), scope filter and order, all web bookmarks (by folder or as one list) with their "Page title" switch and scope select (and text field for "address contains"), "How it works" (a `.folder`, closed by default) with one row per scope in the order of the select, which bookmark wins, links.
+- **Settings** (`src/options/`): heading, the "add the page's own title" switch (a surface with one `.row`), search, view (Folders / List), scope filter and order, all web bookmarks (by folder or as one list) with their "Page title" switch and scope select (and text field for "address contains"), the settings file (Export / Import, with a summary before an import is applied), "How it works" (a `.folder`, closed by default) with one row per scope in the order of the select, which bookmark wins, links.
 - **Context menu:** four radio items on web pages, one per scope, that mirror the active tab.
 
 Texts come from `_locales/` (`en`, `hr`) through `src/ui/i18n.js`; nothing visible is hard-coded in HTML.

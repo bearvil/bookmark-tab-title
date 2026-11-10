@@ -532,6 +532,53 @@ await check('settings page: ?edit= opens the folders above the bookmark', async 
   await sw.evaluate((k) => chrome.storage.sync.remove(k), `scope:${base.slice(7)}/work/deep`);
   if (scope !== 'contains') throw new Error(scope);
 });
+await check('settings file: export, then import applies the settings to every bookmark with the same address', async () => {
+  const workA = `${base.slice(7)}/work/a`;
+  const workB = `${base.slice(7)}/work/b`;
+  await sw.evaluate(([a, b]) => chrome.storage.sync.set({ [`scope:${a}`]: { scope: 'host' }, [`title:${b}`]: true }), [workA, workB]);
+  const options = await optionsPage();
+  const [download] = await Promise.all([options.waitForEvent('download'), options.click('#export')]);
+  const file = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+  const exported = file.bookmarks.find((e) => e.address === workA);
+  const name = download.suggestedFilename();
+  // Gone from this browser; a second bookmark of the same address, elsewhere and under another name.
+  await sw.evaluate(([a, b]) => chrome.storage.sync.remove([`scope:${a}`, `title:${b}`]), [workA, workB]);
+  await sw.evaluate((u) => chrome.bookmarks.create({ parentId: '2', title: 'Work a copy', url: u }), `${base}/work/a/`);
+  await options.reload();
+  await options.waitForSelector('#list select');
+  await options.setInputFiles('#import-file', await download.path());
+  await options.waitForSelector('#import-review:not([hidden])');
+  const summary = await options.textContent('#import-summary');
+  await options.click('#import-apply');
+  await options.waitForSelector('#backup-status-row:not([hidden])');
+  const status = await options.textContent('#backup-status');
+  const copy = options.locator('#list li', { has: options.locator('[data-field="title"]', { hasText: /^Work a copy$/ }) });
+  const scope = await copy.locator('select').inputValue();
+  const restored = await sw.evaluate(([a, b]) => chrome.storage.sync.get([`scope:${a}`, `title:${b}`]), [workA, workB]);
+  await options.close();
+  await sw.evaluate((b) => chrome.storage.sync.remove(`title:${b}`), workB);
+  const ok =
+    /^bookmark-tab-title-settings-\d{4}-\d{2}-\d{2}\.json$/.test(name) &&
+    exported?.name === 'Work a' &&
+    exported.scope === 'host' &&
+    /\d/.test(summary) &&
+    status.includes(String(file.bookmarks.length)) &&
+    scope === 'host' &&
+    restored[`scope:${workA}`]?.scope === 'host' &&
+    restored[`title:${workB}`] === true;
+  if (!ok) throw new Error(JSON.stringify({ name, exported, summary, status, scope, restored }));
+});
+await check('settings file: another file is refused and nothing changes', async () => {
+  const before = await sw.evaluate(() => chrome.storage.sync.get(null));
+  const options = await optionsPage();
+  await options.setInputFiles('#import-file', { name: 'other.json', mimeType: 'application/json', buffer: Buffer.from('{"app":"other"}') });
+  await options.waitForSelector('#backup-status-row:not([hidden])');
+  const error = await options.$eval('#backup-status', (p) => p.classList.contains('tone-danger'));
+  const review = await options.isVisible('#import-review');
+  await options.close();
+  const after = await sw.evaluate(() => chrome.storage.sync.get(null));
+  if (!error || review || JSON.stringify(before) !== JSON.stringify(after)) throw new Error(JSON.stringify({ error, review }));
+});
 const appendSwitch = async (on) => {
   const options = await optionsPage();
   if ((await options.isChecked('#append-page-title')) !== on) await options.click('#append-page-title');

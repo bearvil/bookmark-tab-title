@@ -10,6 +10,7 @@ import {
   setPageTitleFor,
   setScope,
 } from '../settings.js';
+import { buildExport, exportFileName, MAX_FILE_BYTES, parseBackup, planImport, summarize } from '../backup.js';
 import { localize, t } from '../ui/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -281,6 +282,69 @@ for (const radio of document.querySelectorAll('[name="view"]')) {
   });
 }
 onScopesChanged(refreshScopes);
+
+// --- Settings file: export, and import with a summary before anything is written.
+let pendingImport = null;
+
+function showBackupStatus(text = '', error = false) {
+  $('backup-status').textContent = text;
+  $('backup-status').classList.toggle('tone-danger', error);
+  $('backup-status').classList.toggle('tone-secondary', !error);
+  $('backup-status-row').hidden = !text;
+}
+
+function closeReview() {
+  pendingImport = null;
+  $('import-review').hidden = true;
+}
+
+$('export').addEventListener('click', async () => {
+  const [stored, { all }] = await Promise.all([chrome.storage.sync.get(null), loadBookmarks()]);
+  const file = buildExport(stored, all);
+  const url = URL.createObjectURL(new Blob([`${JSON.stringify(file, null, 2)}\n`], { type: 'application/json' }));
+  const link = Object.assign(document.createElement('a'), { href: url, download: exportFileName() });
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  closeReview();
+  showBackupStatus(t('exportDone', String(file.bookmarks.length)));
+});
+
+$('import').addEventListener('click', () => $('import-file').click());
+$('import-file').addEventListener('change', async () => {
+  const [file] = $('import-file').files;
+  $('import-file').value = '';
+  if (!file) return;
+  const parsed = file.size > MAX_FILE_BYTES ? { error: 'size' } : parseBackup(await file.text());
+  if (parsed.error) {
+    closeReview();
+    return showBackupStatus(t(parsed.error === 'size' ? 'importErrorSize' : 'importErrorFile'), true);
+  }
+  const { total, matching, other, skipped } = summarize(parsed, data.all);
+  const lines = [t('importSummary', String(total), String(matching), String(other))];
+  if (parsed.pageTitleForAll !== undefined) lines.push(t('importSummaryAll', t(parsed.pageTitleForAll ? 'stateOn' : 'stateOff')));
+  if (skipped) lines.push(t('importSkipped', String(skipped)));
+  pendingImport = parsed;
+  $('import-summary').textContent = lines.join(' ');
+  $('import-review').hidden = false;
+  showBackupStatus();
+  $('import-apply').focus();
+});
+
+$('import-apply').addEventListener('click', async () => {
+  if (!pendingImport) return;
+  const count = pendingImport.entries.length;
+  const { set, remove } = planImport(pendingImport, await getAppendPageTitle());
+  try {
+    // Written first: when the browser has no room for it, nothing has changed yet.
+    if (Object.keys(set).length) await chrome.storage.sync.set(set);
+    if (remove.length) await chrome.storage.sync.remove(remove);
+  } catch {
+    return showBackupStatus(t('importErrorQuota'), true);
+  }
+  closeReview();
+  showBackupStatus(t('importDone', String(count)));
+});
+$('import-cancel').addEventListener('click', closeReview);
 for (const event of ['onCreated', 'onChanged', 'onRemoved', 'onMoved', 'onImportEnded']) {
   chrome.bookmarks[event].addListener(render);
 }

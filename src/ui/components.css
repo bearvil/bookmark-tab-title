@@ -37,6 +37,7 @@ body {
 .text-micro { font-size: var(--text-micro); font-weight: 700; letter-spacing: 0.3px; margin: 0; }
 .tone-secondary { color: var(--text-secondary); }
 .tone-accent { color: var(--accent); }
+.tone-danger { color: var(--text-danger); }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Parts on one line: only the .truncate part (e.g. an address) shortens, the others always stay readable */
 .split { display: flex; gap: 0.3em; min-width: 0; white-space: nowrap; }
@@ -258,6 +259,9 @@ body {
 .button--primary { background: var(--accent); color: var(--accent-text); }
 .button--ghost { background: transparent; color: var(--text-secondary); border-color: var(--border-1); }
 .button--block { width: 100%; }
+.button--compact { min-height: 36px; padding: 0 var(--space-lg); font-size: var(--text-caption); }
+/* A few buttons side by side */
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
 
 .icon-button {
   display: inline-flex;
