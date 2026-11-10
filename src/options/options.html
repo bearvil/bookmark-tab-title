@@ -40,10 +40,19 @@
             </svg>
             <input id="search" class="field" type="search" autocomplete="off" data-i18n-attr="placeholder:optionsSearch,aria-label:optionsSearch" />
           </label>
+          <div class="controls">
+            <div class="segmented" role="radiogroup" data-i18n-attr="aria-label:viewLabel">
+              <label><input id="view-folders" type="radio" name="view" value="folders" /><span data-i18n="view_folders"></span></label>
+              <label><input id="view-list" type="radio" name="view" value="list" /><span data-i18n="view_list"></span></label>
+            </div>
+            <span class="select"><select id="filter" data-i18n-attr="aria-label:filterLabel"></select></span>
+            <span class="select"><select id="sort" data-i18n-attr="aria-label:sortLabel"></select></span>
+          </div>
           <p id="count" class="text-caption tone-secondary" aria-live="polite"></p>
         </div>
 
-        <ul id="list" class="surface list" aria-labelledby="list-label"></ul>
+        <div id="tree" class="surface tree" hidden></div>
+        <ul id="list" class="surface list" aria-labelledby="list-label" hidden></ul>
         <p id="list-label" class="visually-hidden" data-i18n="scopeLabel"></p>
 
         <div id="empty" class="surface empty" hidden>
@@ -52,9 +61,12 @@
         </div>
       </section>
 
-      <section class="surface how" aria-labelledby="how-title">
+      <details id="how" class="surface how folder">
+        <summary class="row folder__head">
+          <span class="folder__chevron" aria-hidden="true"></span>
+          <h2 class="text-title folder__name" data-i18n="optionsHowTitle"></h2>
+        </summary>
         <div class="row row--stack">
-          <h2 id="how-title" class="text-title" data-i18n="optionsHowTitle"></h2>
           <p class="text-body tone-secondary" data-i18n="howIntro"></p>
         </div>
         <div class="row row--stack">
@@ -80,7 +92,7 @@
         <div class="row row--stack">
           <p class="text-caption tone-secondary" data-i18n="howTrail"></p>
         </div>
-      </section>
+      </details>
 
       <footer class="footer text-caption tone-secondary">
         <a class="tone-accent" href="https://bearvil.github.io/privacy-policies/bookmark-tab-title-pp" target="_blank" rel="noopener" data-i18n="privacyPolicy"></a>
@@ -88,6 +100,18 @@
         <span id="version"></span>
       </footer>
     </div>
+
+    <template id="folder">
+      <details class="folder">
+        <summary class="row folder__head">
+          <span class="folder__chevron" aria-hidden="true"></span>
+          <span class="text-body text-strong truncate folder__name" data-field="name"></span>
+          <span class="pill" data-field="wider" hidden></span>
+          <span class="text-caption tone-secondary" data-field="count"></span>
+        </summary>
+        <ul class="list folder__list"></ul>
+      </details>
+    </template>
 
     <template id="row">
       <li class="row row--wrap">

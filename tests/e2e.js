@@ -223,10 +223,12 @@ const popupFor = async (url) => {
   await popup.waitForTimeout(300);
   return popup;
 };
-const optionsPage = async () => {
+// The settings page in a given view (stored per device); the scope tests use the flat list.
+const optionsPage = async (view = { mode: 'list' }, query = '') => {
+  await sw.evaluate((v) => (v ? chrome.storage.local.set({ optionsView: v }) : chrome.storage.local.remove('optionsView')), view);
   const options = await context.newPage();
-  await options.goto(`chrome-extension://${extensionId}/src/options/options.html`);
-  await options.waitForSelector('#list select');
+  await options.goto(`chrome-extension://${extensionId}/src/options/options.html${query}`);
+  await options.waitForSelector(view?.mode === 'list' ? '#list select' : '#tree .folder');
   return options;
 };
 
@@ -421,6 +423,112 @@ await check('popup on a page that is not a bookmark can bookmark it', async () =
   await popup.close();
   await expectTitle(fresh, 'Fresh bookmark');
   await fresh.close();
+});
+// --- Settings page: folders, one list, filter and order.
+const work = await sw.evaluate(async (b) => {
+  const folder = await chrome.bookmarks.create({ parentId: '1', title: 'Work' });
+  const deep = await chrome.bookmarks.create({ parentId: folder.id, title: 'Deep' });
+  await chrome.bookmarks.create({ parentId: folder.id, title: 'Work b', url: `${b}/work/b` });
+  await chrome.bookmarks.create({ parentId: folder.id, title: 'Work a', url: `${b}/work/a` });
+  const one = await chrome.bookmarks.create({ parentId: deep.id, title: 'Deep one', url: `${b}/work/deep` });
+  await chrome.bookmarks.create({ parentId: '2', title: 'Elsewhere', url: `${b}/elsewhere` });
+  return { folder: folder.id, deep: deep.id, one: one.id };
+}, base);
+const folderOf = (options, id) => options.locator(`.folder[data-id="${id}"]`);
+const openIds = (options) => options.$$eval('.folder', (all) => all.filter((d) => d.open).map((d) => d.dataset.id));
+const titlesIn = (locator) => locator.locator(':scope > .folder__list > li[data-key] [data-field="title"]').allTextContents();
+
+await check('settings page: folders view by default, every folder closed, with counts', async () => {
+  const options = await optionsPage(null);
+  const view = await options.isChecked('#view-folders');
+  const open = await openIds(options);
+  const bar = folderOf(options, '1');
+  const count = Number(await bar.locator(':scope > summary [data-field="count"]').textContent());
+  const inBar = await sw.evaluate(async () => {
+    const walk = (n) => (n.url ? (/^https?:/.test(n.url) && n.title.trim() ? 1 : 0) : (n.children ?? []).reduce((a, c) => a + walk(c), 0));
+    return walk((await chrome.bookmarks.getSubTree('1'))[0]);
+  });
+  await options.close();
+  if (!view || open.length || count !== inBar) throw new Error(JSON.stringify({ view, open, count, inBar }));
+});
+await check('settings page: "How it works" is closed by default and opens on click', async () => {
+  const options = await optionsPage(null);
+  const before = await options.isVisible('#how [data-i18n="howIntro"]');
+  await options.click('#how > summary');
+  const after = await options.isVisible('#how [data-i18n="howIntro"]');
+  await options.close();
+  if (before || !after) throw new Error(JSON.stringify({ before, after }));
+});
+await check('settings page: open folders are remembered', async () => {
+  const options = await optionsPage(null);
+  await folderOf(options, '1').locator(':scope > summary').click();
+  await folderOf(options, work.folder).locator(':scope > summary').click();
+  await options.waitForTimeout(200);
+  await options.reload();
+  await options.waitForSelector('#tree .folder');
+  const open = await openIds(options);
+  await options.close();
+  if (!open.includes('1') || !open.includes(work.folder) || open.includes(work.deep)) throw new Error(JSON.stringify(open));
+});
+await check('settings page: search shows only folders with matches, open, and keeps the remembered ones', async () => {
+  const options = await optionsPage({ mode: 'folders', sort: 'browser', open: ['1'] });
+  await options.fill('#search', 'deep one');
+  await options.waitForTimeout(200);
+  const shown = await options.$$eval('#tree .folder', (all) => all.map((d) => [d.dataset.id, d.open]));
+  const rows = await options.locator('#tree li[data-key] [data-field="title"]').allTextContents();
+  await options.fill('#search', '');
+  await options.waitForTimeout(200);
+  const after = await openIds(options);
+  await options.close();
+  const expected = JSON.stringify([['1', true], [work.folder, true], [work.deep, true]]);
+  if (JSON.stringify(shown) !== expected || rows.join() !== 'Deep one' || after.join() !== '1') {
+    throw new Error(JSON.stringify({ shown, rows, after }));
+  }
+});
+await check('settings page: filter by scope, with counts', async () => {
+  await sw.evaluate((k) => chrome.storage.sync.set({ [k]: { scope: 'host' } }), `scope:${base.slice(7)}/work/a`);
+  const options = await optionsPage({ mode: 'folders', sort: 'browser', open: [] });
+  await options.selectOption('#filter', 'host');
+  await options.waitForTimeout(200);
+  const scopesShown = await options.$$eval('#tree li[data-key]', (rows) => rows.map((r) => r.dataset.scope));
+  const titles = await options.locator('#tree li[data-key] [data-field="title"]').allTextContents();
+  const label = await options.$eval('#filter option[value="host"]', (o) => o.textContent);
+  await options.close();
+  if (!titles.includes('Work a') || titles.includes('Work b') || scopesShown.some((x) => x !== 'host') || !/\(\d+\)$/.test(label)) {
+    throw new Error(JSON.stringify({ titles, scopesShown, label }));
+  }
+});
+await check('settings page: order within a folder, folders first', async () => {
+  const options = await optionsPage({ mode: 'folders', sort: 'browser', open: ['1', work.folder] });
+  const folder = folderOf(options, work.folder);
+  const browser = await titlesIn(folder);
+  await options.selectOption('#sort', 'name');
+  await options.waitForTimeout(200);
+  const byName = await titlesIn(folderOf(options, work.folder));
+  const first = await folderOf(options, work.folder).locator(':scope > .folder__list > li').first().getAttribute('class');
+  await options.close();
+  if (browser.join() !== 'Work b,Work a' || byName.join() !== 'Work a,Work b' || first !== 'folder__item') {
+    throw new Error(JSON.stringify({ browser, byName, first }));
+  }
+});
+await check('settings page: one list, as before, with the folder of each bookmark', async () => {
+  const options = await optionsPage({ mode: 'folders', sort: 'browser', open: [] });
+  await options.check('#view-list');
+  await options.waitForSelector('#list select');
+  const tree = await options.isVisible('#tree');
+  const where = await options.locator('#list li', { has: options.locator('[data-field="title"]', { hasText: /^Deep one$/ }) }).locator('[data-field="where"]').textContent();
+  const stored = await sw.evaluate(async () => (await chrome.storage.local.get('optionsView')).optionsView.mode);
+  await options.close();
+  if (tree || !where.endsWith('Work › Deep') || stored !== 'list') throw new Error(JSON.stringify({ tree, where, stored }));
+});
+await check('settings page: ?edit= opens the folders above the bookmark', async () => {
+  const options = await optionsPage({ mode: 'folders', sort: 'browser', open: [] }, `?edit=${work.one}`);
+  const row = options.locator(`li[data-id="${work.one}"]`);
+  await row.locator('[data-field="text"]').waitFor();
+  const scope = await row.locator('select').inputValue();
+  await options.close();
+  await sw.evaluate((k) => chrome.storage.sync.remove(k), `scope:${base.slice(7)}/work/deep`);
+  if (scope !== 'contains') throw new Error(scope);
 });
 const appendSwitch = async (on) => {
   const options = await optionsPage();

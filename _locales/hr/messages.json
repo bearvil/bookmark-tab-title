@@ -113,6 +113,59 @@
   "appendTitleHint": {
     "message": "Tab prikazuje „naziv bookmarka — naslov stranice”, npr. „Mail — (3) Inbox”. Za sve bookmarke."
   },
+  "viewLabel": {
+    "message": "Prikaz"
+  },
+  "view_folders": {
+    "message": "Folderi"
+  },
+  "view_list": {
+    "message": "Popis"
+  },
+  "filterLabel": {
+    "message": "Prikaži"
+  },
+  "filter_all": {
+    "message": "Svi bookmarki"
+  },
+  "filter_wider": {
+    "message": "Sežu i izvan svoje adrese"
+  },
+  "filter_exact": {
+    "message": "Samo ova adresa"
+  },
+  "filter_below": {
+    "message": "Ova adresa i sve ispod"
+  },
+  "filter_contains": {
+    "message": "Stranice čija adresa sadrži"
+  },
+  "filter_host": {
+    "message": "Cijeli host"
+  },
+  "sortLabel": {
+    "message": "Redoslijed"
+  },
+  "sort_browser": {
+    "message": "Redoslijed: kao u pregledniku"
+  },
+  "sort_name": {
+    "message": "Redoslijed: naziv A–Ž"
+  },
+  "sort_host": {
+    "message": "Redoslijed: host"
+  },
+  "sort_scope": {
+    "message": "Redoslijed: doseg, širi prvo"
+  },
+  "folderWider": {
+    "message": "izvan adrese: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
   "containsPlaceholder": {
     "message": "npr. /u/1/ ili authuser=1"
   },

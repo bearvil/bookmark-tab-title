@@ -185,6 +185,49 @@ body {
   pointer-events: none;
 }
 
+/* Segmented control: <div class="segmented" role="radiogroup"><label><input type="radio"><span>…</span></label>…</div> */
+.segmented {
+  display: inline-flex;
+  flex: none;
+  gap: var(--space-xxs);
+  padding: 3px;
+  border-radius: var(--radius-round);
+  background: var(--surface-2);
+  border: var(--hairline) solid var(--border-2);
+}
+.segmented label { position: relative; display: flex; }
+.segmented input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.segmented span {
+  padding: 5px var(--space-md);
+  border-radius: var(--radius-round);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.segmented input:checked + span { background: var(--accent); color: var(--accent-text); }
+.segmented input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Folder tree: <details class="folder"><summary class="row folder__head">…</summary><ul class="list folder__list">… */
+.tree > .folder + .folder { border-top: var(--hairline) solid var(--divider); }
+.folder > summary { list-style: none; cursor: pointer; }
+.folder > summary::-webkit-details-marker { display: none; }
+.folder > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--radius-md); }
+.folder__name { flex: 1; min-width: 0; }
+.folder__chevron {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin: 0 var(--space-xs);
+  border-right: 2px solid var(--text-secondary);
+  border-bottom: 2px solid var(--text-secondary);
+  rotate: -45deg;
+  transition: rotate 160ms ease;
+}
+.folder[open] > summary .folder__chevron { rotate: 45deg; }
+.folder > .folder__list { padding-left: var(--space-xl); border-top: var(--hairline) solid var(--divider); }
+.folder__list > * + * { border-top: var(--hairline) solid var(--divider); }
+
 /* Buttons: pill shape, variant by function */
 .button {
   display: inline-flex;

@@ -16,6 +16,7 @@ Rename a bookmark to "Mail – work" and the tab is called exactly that, even wh
 - The most specific bookmark wins: the bookmark of the page itself, then "address contains", then "this address and below" (the deepest), then the last "whole site" bookmark the tab came through. A page with a bookmark of its own shows that name, and the next page returns to the "whole site" name. Leaving the host ends the trail; a link opened in a new tab keeps it.
 - **Add the page's own title** (settings page, off by default): the tab shows "bookmark name — page title", e.g. "Mail — (3) Inbox", and follows the page as its title changes. One switch for all bookmarks.
 - One setting, three places: the toolbar popup (the bookmark of the current page, its name and its scope), the settings page with all bookmarks, and the page's right-click menu.
+- The settings page shows your bookmarks by folder (collapsible, as in the browser) or as one list, filtered by scope and ordered as in the browser, by name, by site or by reach. The view, the order and the open folders are remembered on this device.
 - Everything happens locally. No network requests, no analytics, no account.
 
 ## Install (development)

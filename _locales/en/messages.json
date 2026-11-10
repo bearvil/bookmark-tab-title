@@ -115,6 +115,59 @@
   "appendTitleHint": {
     "message": "The tab shows “bookmark name — page title”, e.g. “Mail — (3) Inbox”. For every bookmark."
   },
+  "viewLabel": {
+    "message": "View"
+  },
+  "view_folders": {
+    "message": "Folders"
+  },
+  "view_list": {
+    "message": "List"
+  },
+  "filterLabel": {
+    "message": "Show"
+  },
+  "filter_all": {
+    "message": "All bookmarks"
+  },
+  "filter_wider": {
+    "message": "Reaching beyond their address"
+  },
+  "filter_exact": {
+    "message": "Only this address"
+  },
+  "filter_below": {
+    "message": "This address and below"
+  },
+  "filter_contains": {
+    "message": "Pages whose address contains"
+  },
+  "filter_host": {
+    "message": "The whole site"
+  },
+  "sortLabel": {
+    "message": "Order"
+  },
+  "sort_browser": {
+    "message": "Order: as in the browser"
+  },
+  "sort_name": {
+    "message": "Order: name A–Z"
+  },
+  "sort_host": {
+    "message": "Order: site"
+  },
+  "sort_scope": {
+    "message": "Order: reach, wider first"
+  },
+  "folderWider": {
+    "message": "$COUNT$ beyond their address",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
   "containsPlaceholder": {
     "message": "e.g. /u/1/ or authuser=1"
   },
