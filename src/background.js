@@ -71,14 +71,25 @@ async function refreshAllTabs() {
   updateMenu();
 }
 
+// Many changes can come at once (an import, the first sync on a new device, a folder deleted): they are refreshed
+// once, a moment after the last one, and not at all while an import is still running.
+const REFRESH_DELAY_MS = 300;
+let refreshTimer = null;
+let importing = false;
+
+function scheduleRefresh() {
+  clearTimeout(refreshTimer);
+  if (!importing) refreshTimer = setTimeout(refreshAllTabs, REFRESH_DELAY_MS);
+}
+
 function onBookmarksChanged() {
   indexPromise = null;
-  refreshAllTabs();
+  scheduleRefresh();
 }
 
 function onSettingsChanged() {
   scopesPromise = null;
-  refreshAllTabs();
+  scheduleRefresh();
 }
 
 // --- Context menu (C): one radio item per scope, mirroring the active tab like the popup.
@@ -175,7 +186,14 @@ chrome.tabs.onRemoved.addListener((tabId) =>
 chrome.bookmarks.onCreated.addListener(onBookmarksChanged);
 chrome.bookmarks.onChanged.addListener(onBookmarksChanged);
 chrome.bookmarks.onRemoved.addListener(onBookmarksChanged);
-chrome.bookmarks.onImportEnded.addListener(onBookmarksChanged);
+chrome.bookmarks.onImportBegan.addListener(() => {
+  importing = true;
+  clearTimeout(refreshTimer);
+});
+chrome.bookmarks.onImportEnded.addListener(() => {
+  importing = false;
+  onBookmarksChanged();
+});
 onScopesChanged(onSettingsChanged);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

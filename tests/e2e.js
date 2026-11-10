@@ -184,6 +184,25 @@ await check('second copy of the content script (extension update) restores the r
   await tab.waitForTimeout(300);
   await expectTitle(tab, 'Original');
 });
+await check('many bookmark changes at once are refreshed once, and the names are right', async () => {
+  // Count index rebuilds: the service worker calls chrome.bookmarks.getTree() for each one.
+  await sw.evaluate(() => {
+    globalThis.treeReads = 0;
+    const getTree = chrome.bookmarks.getTree.bind(chrome.bookmarks);
+    chrome.bookmarks.getTree = (...args) => (globalThis.treeReads++, getTree(...args));
+  });
+  await tab.goto(`${base}/plain2`);
+  const folder = await sw.evaluate(async () => {
+    const f = await chrome.bookmarks.create({ parentId: '2', title: 'Bulk' });
+    for (let i = 0; i < 300; i++) await chrome.bookmarks.create({ parentId: f.id, title: `Bulk ${i}`, url: `https://bulk.example/${i}` });
+    return f.id;
+  });
+  await bookmark.create('Bulk named', `${base}/plain2`);
+  await expectTitle(tab, 'Bulk named');
+  const reads = await sw.evaluate(() => globalThis.treeReads);
+  await sw.evaluate((id) => chrome.bookmarks.removeTree(id), folder);
+  if (reads > 5) throw new Error(`index rebuilt ${reads} times for 301 changes`);
+});
 const extensionId = new URL(sw.url()).host;
 const tabIdOf = (url) => sw.evaluate(async (u) => (await chrome.tabs.query({ url: u }))[0]?.id, url);
 const popupFor = async (url) => {
