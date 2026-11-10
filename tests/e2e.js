@@ -27,6 +27,10 @@ const routes = {
   '/prefix': page('Prefix', `<script>let n = 0; setInterval(() => { document.title = '(' + ++n + ') ' + document.title.replace(/^\\(\\d+\\) /, ''); }, 100);</script>`),
   // A title with markup in it, shown by the browser as text.
   '/markup': page('&lt;div style="color:#d40a0a"&gt;E4&lt;/div&gt; Admin &amp; more'),
+  // A title that already has the bookmark name in it, at the start and at the end.
+  '/named': page('Nm Admin - Nm'),
+  // An app that puts back a title it read from the tab earlier.
+  '/restore': page('Restore', `<script>setTimeout(() => { const t = document.title; document.title = 'Other'; setTimeout(() => { document.title = t; }, 300); }, 800);</script>`),
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
 
@@ -689,6 +693,22 @@ await check('page title with markup in it: only its text is added', async () => 
   await sw.evaluate((k) => chrome.storage.sync.remove(k), `title:${base.slice(7)}/markup`);
   await expectTitle(mk, 'Mk');
   await mk.close();
+});
+await check('page title that has the bookmark name in it shows the name once', async () => {
+  await bookmark.create('Nm', `${base}/named`);
+  await bookmark.create('Rs', `${base}/restore`);
+  await sw.evaluate((k) => chrome.storage.sync.set(Object.fromEntries(k.map((x) => [x, true]))), [`title:${base.slice(7)}/named`, `title:${base.slice(7)}/restore`]);
+  const nm = await context.newPage();
+  await nm.goto(`${base}/named`);
+  await expectTitle(nm, 'Nm — Admin');
+  const rs = await context.newPage();
+  await rs.goto(`${base}/restore`);
+  await expectTitle(rs, 'Rs — Restore');
+  await rs.waitForTimeout(1500);
+  await expectTitle(rs, 'Rs — Restore', 200);
+  await sw.evaluate((k) => chrome.storage.sync.remove(k), [`title:${base.slice(7)}/named`, `title:${base.slice(7)}/restore`]);
+  await nm.close();
+  await rs.close();
 });
 await check('context menu has one item per scope (clicking native menus is not scriptable)', async () => {
   // update() rejects for an unknown menu id.

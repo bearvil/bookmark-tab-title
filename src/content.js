@@ -23,9 +23,29 @@
   // Some pages put markup in their title (e.g. an environment label as <div style="color:…">DEV</div>), which the
   // browser shows as text: only the text between the tags is added.
   const textOf = (title) => title.replace(/<\/?[a-z][^<>]*>/gi, ' ');
+  // The page title without the bookmark name at its start or end ("E4 Admin" for "e4", "Inbox - Gmail" for "Gmail",
+  // also "e4 — Inbox" when a page puts back a title it read from the tab), so the name is shown once.
+  const EDGE = /^[\s\-–—|·:•]+|[\s\-–—|·:•]+$/g;
+  const withoutName = (page, name) => {
+    const n = name.toLowerCase();
+    const word = (c) => c !== undefined && /[\p{L}\p{N}]/u.test(c);
+    let rest = page;
+    for (let changed = true; changed && rest; ) {
+      changed = false;
+      const lower = rest.toLowerCase();
+      if (lower.startsWith(n) && !word(rest[n.length])) {
+        rest = rest.slice(n.length).replace(EDGE, '');
+        changed = true;
+      } else if (lower.endsWith(n) && !word(rest[rest.length - n.length - 1])) {
+        rest = rest.slice(0, rest.length - n.length).replace(EDGE, '');
+        changed = true;
+      }
+    }
+    return rest;
+  };
   const titleFor = (own) => {
     const name = collapse(wanted);
-    const page = collapse(textOf(own));
+    const page = withoutName(collapse(textOf(own)), name);
     return append && page && page !== name ? `${name}${SEPARATOR}${page}` : name;
   };
 
