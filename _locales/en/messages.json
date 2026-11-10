@@ -69,15 +69,6 @@
   "optionsHowTitle": {
     "message": "How it works"
   },
-  "optionsHow1": {
-    "message": "A bookmarked page shows the bookmark name as its tab title."
-  },
-  "optionsHow2": {
-    "message": "“Pages under it” and “whole site” follow the tab: once the tab has been on the bookmarked address, the name stays while it browses under that address or anywhere on the site. A page with a bookmark of its own shows that name, and the tab then returns to the last “whole site” bookmark it came through. Leaving the site ends it."
-  },
-  "optionsHow3": {
-    "message": "“Address contains” works in every tab, even for links opened from mail: any page of the bookmark's site whose address contains the text gets the name. Useful with several Google accounts — e.g. /u/1/ or authuser=1, a Play Console developer id or a Cloud project=… Separate alternatives with a space."
-  },
   "menuScope_exact": {
     "message": "Name only on this address"
   },
@@ -110,7 +101,7 @@
     "message": "Only this address"
   },
   "scope_below": {
-    "message": "This address and the pages under it"
+    "message": "This address and below"
   },
   "scope_contains": {
     "message": "Pages whose address contains"
@@ -145,8 +136,35 @@
       }
     }
   },
-  "optionsHow4": {
-    "message": "The choice is the same here, in the extension's popup and when you right-click a page."
+  "belowDetail": {
+    "message": "Everything under"
+  },
+  "howIntro": {
+    "message": "A bookmarked page shows the bookmark name as its tab title. For each bookmark you choose how far the name reaches:"
+  },
+  "howDefault": {
+    "message": "Default"
+  },
+  "howExact": {
+    "message": "Only on the bookmarked address itself."
+  },
+  "howBelow": {
+    "message": "After the tab has been on the bookmarked address, also on every page under it — e.g. example.com/docs, then example.com/docs/guide."
+  },
+  "howContains": {
+    "message": "In every tab, also for links opened from mail: every page of the bookmark's site whose address contains the text. Made for several accounts — /u/1/ or authuser=1 at Google, a Play Console developer id, a Cloud project=… Separate alternatives with a space."
+  },
+  "howHost": {
+    "message": "After the tab has been on the bookmarked address, on every page of the site."
+  },
+  "howWinsTitle": {
+    "message": "When several bookmarks fit"
+  },
+  "howWins": {
+    "message": "The most specific one wins: the page's own bookmark, then “address contains”, then “this address and below”, then the last “whole site” bookmark the tab came through. After a page with a bookmark of its own, the next page returns to that whole-site name."
+  },
+  "howTrail": {
+    "message": "Leaving the site ends “this address and below” and “the whole site”; a link opened in a new tab keeps them. The choice is the same here, in the extension's popup and when you right-click a page."
   },
   "privacyPolicy": {
     "message": "Privacy policy"

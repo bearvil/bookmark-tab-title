@@ -38,6 +38,10 @@ body {
 .tone-secondary { color: var(--text-secondary); }
 .tone-accent { color: var(--accent); }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Parts on one line: only the .truncate part (e.g. an address) shortens, the others always stay readable */
+.split { display: flex; gap: 0.3em; min-width: 0; white-space: nowrap; }
+.split > * { flex: none; }
+.split > .truncate { flex: 0 1 auto; min-width: 0; }
 
 /* Brand header: icon + name */
 .brand { display: flex; align-items: center; gap: var(--space-md); }

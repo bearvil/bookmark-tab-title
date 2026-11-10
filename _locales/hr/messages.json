@@ -67,15 +67,6 @@
   "optionsHowTitle": {
     "message": "Kako radi"
   },
-  "optionsHow1": {
-    "message": "Stranica iz bookmarka u tabu pokazuje naziv bookmarka umjesto svog naslova."
-  },
-  "optionsHow2": {
-    "message": "„Stranice ispod” i „cijeli host” prate tab: kad je tab bio na adresi bookmarka, naziv ostaje dok pregledava stranice ispod te adrese ili bilo gdje na hostu. Stranica s vlastitim bookmarkom pokazuje svoj naziv, a tab se zatim vraća na zadnji „cijeli host” bookmark kroz koji je prošao. Odlaskom s hosta to prestaje."
-  },
-  "optionsHow3": {
-    "message": "„Adresa sadrži” vrijedi u svakom tabu, i za poveznice otvorene iz maila: svaka stranica hosta bookmarka čija adresa sadrži tekst dobiva naziv. Korisno s više Google računa — npr. /u/1/ ili authuser=1, ID developera u Play Consoleu ili project=… u Cloudu. Više mogućnosti odvoji razmakom."
-  },
   "menuScope_exact": {
     "message": "Naziv samo na ovoj adresi"
   },
@@ -108,7 +99,7 @@
     "message": "Samo ova adresa"
   },
   "scope_below": {
-    "message": "Ova adresa i stranice ispod nje"
+    "message": "Ova adresa i sve ispod"
   },
   "scope_contains": {
     "message": "Stranice čija adresa sadrži"
@@ -143,8 +134,35 @@
       }
     }
   },
-  "optionsHow4": {
-    "message": "Izbor je isti ovdje, u izborniku proširenja i kad desnom tipkom klikneš na stranicu."
+  "belowDetail": {
+    "message": "Sve ispod"
+  },
+  "howIntro": {
+    "message": "Stranica iz bookmarka u tabu pokazuje naziv bookmarka umjesto svog naslova. Za svaki bookmark biraš dokle naziv seže:"
+  },
+  "howDefault": {
+    "message": "Zadano"
+  },
+  "howExact": {
+    "message": "Samo na samoj adresi bookmarka."
+  },
+  "howBelow": {
+    "message": "Kad je tab bio na adresi bookmarka, i na svakoj stranici ispod nje — npr. example.com/docs, zatim example.com/docs/guide."
+  },
+  "howContains": {
+    "message": "U svakom tabu, i za poveznice otvorene iz maila: svaka stranica hosta bookmarka čija adresa sadrži tekst. Za više računa — /u/1/ ili authuser=1 kod Googlea, ID developera u Play Consoleu, project=… u Cloudu. Više mogućnosti odvoji razmakom."
+  },
+  "howHost": {
+    "message": "Kad je tab bio na adresi bookmarka, na svakoj stranici hosta."
+  },
+  "howWinsTitle": {
+    "message": "Kad odgovara više bookmarka"
+  },
+  "howWins": {
+    "message": "Pobjeđuje najspecifičniji: vlastiti bookmark stranice, zatim „adresa sadrži”, zatim „ova adresa i sve ispod”, zatim zadnji „cijeli host” bookmark kroz koji je tab prošao. Nakon stranice s vlastitim bookmarkom sljedeća se stranica vraća na taj naziv cijelog hosta."
+  },
+  "howTrail": {
+    "message": "Odlaskom s hosta prestaju „ova adresa i sve ispod” i „cijeli host”; poveznica otvorena u novom tabu ih zadržava. Izbor je isti ovdje, u izborniku proširenja i kad desnom tipkom klikneš na stranicu."
   },
   "privacyPolicy": {
     "message": "Pravila privatnosti"

@@ -10,10 +10,10 @@ Rename a bookmark to "Mail – work" and the tab is called exactly that, even wh
 - Updates immediately when you add, rename or delete a bookmark. Deleting it restores the page's own title.
 - **How far the name reaches**, per bookmark:
   - **Only this address** (default).
-  - **This address and the pages under it**: once the tab has been on the bookmarked address, e.g. `example.com/docs` also names `example.com/docs/a/b`.
+  - **This address and below**: once the tab has been on the bookmarked address, e.g. `example.com/docs` also names `example.com/docs/a/b`.
   - **Pages whose address contains** a text: every page of the bookmark's host whose path, query or `#fragment` contains it, in any tab, also for links opened from mail. Made for several accounts: `/u/1/` or `authuser=1` at Google, a Play Console `/developers/<id>`, a Cloud `project=<id>`. Separate alternatives with a space.
   - **The whole site**: once the tab has been on the bookmarked address, every page of that host.
-- The most specific bookmark wins: the bookmark of the page itself, then "address contains", then "pages under it" (the deepest), then the last "whole site" bookmark the tab came through. A page with a bookmark of its own shows that name, and the next page returns to the "whole site" name. Leaving the host ends the trail; a link opened in a new tab keeps it.
+- The most specific bookmark wins: the bookmark of the page itself, then "address contains", then "this address and below" (the deepest), then the last "whole site" bookmark the tab came through. A page with a bookmark of its own shows that name, and the next page returns to the "whole site" name. Leaving the host ends the trail; a link opened in a new tab keeps it.
 - One setting, three places: the toolbar popup (the bookmark of the current page, its name and its scope), the settings page with all bookmarks, and the page's right-click menu.
 - Everything happens locally. No network requests, no analytics, no account.
 

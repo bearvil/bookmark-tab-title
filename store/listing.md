@@ -28,7 +28,7 @@ How it works
 • Small differences in the address are ignored: http/https, "www.", a trailing slash or a #section.
 
 Choose how far a name reaches
-• Only this address (default), this address and the pages under it, or the whole site: the tab keeps the bookmark's name while you browse on from the bookmarked page. A page with a bookmark of its own shows that name. Leaving the site ends it.
+• Only this address (default), this address and below, or the whole site: the tab keeps the bookmark's name while you browse on from the bookmarked page. A page with a bookmark of its own shows that name. Leaving the site ends it.
 • Pages whose address contains a text, in any tab: made for several accounts, e.g. /u/1/ or authuser=1 for a second Google account, a Play Console developer id or a Google Cloud project.
 • One setting, three places: the extension's popup (with the bookmark name of the page you are on, editable), the settings page with all your bookmarks, and the right-click menu.
 
@@ -48,7 +48,7 @@ Shows the name of the user's bookmark as the browser tab title whenever the page
 | Permission | Justification |
 |---|---|
 | `bookmarks` | Reads the user's bookmark names and URLs locally to find the bookmark that matches the page open in a tab and show its name as the tab title. A bookmark is only renamed or added when the user does so in the extension's popup. Bookmarks are never sent anywhere. |
-| `contextMenus` | Adds four radio items to the page's right-click menu that choose how far the bookmark name of the current page reaches (only this address, pages under it, pages whose address contains a text, the whole site) — the same per-bookmark setting as in the popup and the settings page. |
+| `contextMenus` | Adds four radio items to the page's right-click menu that choose how far the bookmark name of the current page reaches (only this address, this address and below, pages whose address contains a text, the whole site) — the same per-bookmark setting as in the popup and the settings page. |
 | Host permissions `http://*/*`, `https://*/*` | Any website can be a bookmark, so the bundled content script must be able to run on any http/https page to set its document title to the bookmark name, and the service worker needs the tab URL to match it against bookmarks. The extension makes no network requests and does not read page content. |
 | `webNavigation` | Detects the URL a page load started from before a same-site server redirect (e.g. a bookmark for example.com that redirects to example.com/login), so the bookmark name is still applied, and detects in-page (history API) navigation so the title stays correct in single-page apps. |
 | `scripting` | Used only when the extension is installed or updated, to inject its own bundled content script into tabs that were already open, so it works without reloading every tab. No remote or dynamically generated code is executed. |

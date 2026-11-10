@@ -44,16 +44,11 @@ function paint() {
   $('shown-because').textContent = because ?? '';
 
   const address = normalizeUrl(bookmark.url);
-  const details = {
-    exact: address,
-    below: `${address.replace(/\?.*$/, '')}/…`,
-    contains: t('containsDetail', host),
-    host,
-  };
-  for (const radio of document.querySelectorAll('[name="scope"]')) {
-    radio.checked = radio.value === state.scope;
-    document.querySelector(`[data-detail="${radio.value}"]`).textContent = details[radio.value];
-  }
+  for (const radio of document.querySelectorAll('[name="scope"]')) radio.checked = radio.value === state.scope;
+  document.querySelector('[data-detail="exact"]').textContent = address;
+  document.querySelector('[data-detail="below"] [data-field="address"]').textContent = address.replace(/\?.*$/, '');
+  document.querySelector('[data-detail="contains"]').textContent = t('containsDetail', host);
+  document.querySelector('[data-detail="host"]').textContent = host;
   $('contains-row').hidden = state.scope !== 'contains';
   if (document.activeElement !== $('contains-text')) $('contains-text').value = state.text ?? '';
   $('contains-hint').textContent = t('containsHint', host);

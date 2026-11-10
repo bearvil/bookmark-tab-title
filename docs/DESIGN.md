@@ -23,6 +23,7 @@ The popup and the settings page share one small design system. Pages only compos
 | Component | Variants | Used for |
 |---|---|---|
 | `.text-*` + `.tone-*` | display, title, body, caption, micro · secondary, accent | All text |
+| `.truncate`, `.split` | — | One-line text with an ellipsis; in a `.split` line only the `.truncate` part (an address) shortens |
 | `.brand` | — | Icon + name header |
 | `.surface` | `--2` (nested), `--pad` | Glass cards |
 | `.group` | `__label` | A caption above a surface |
@@ -42,7 +43,7 @@ Motion is limited to the switch, the radio and the toast and turns off with `pre
 
 ## Pages
 - **Popup** (`src/popup/`): the bookmark that names the current tab (name field, why it is shown, and the scope as a choice list with the "address contains" text), "not a bookmark" with a primary "Bookmark this page", or "not available here".
-- **Settings** (`src/options/`): heading, search, all web bookmarks with their scope select (and text field for "address contains"), "How it works", links.
+- **Settings** (`src/options/`): heading, search, all web bookmarks with their scope select (and text field for "address contains"), "How it works" with one row per scope in the order of the select, which bookmark wins, links.
 - **Context menu:** four radio items on web pages, one per scope, that mirror the active tab.
 
 Texts come from `_locales/` (`en`, `hr`) through `src/ui/i18n.js`; nothing visible is hard-coded in HTML.
