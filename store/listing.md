@@ -7,7 +7,7 @@ Text for the Chrome Web Store, Microsoft Edge Add-ons and Opera Add-ons. Keep it
 | Field | Value |
 |---|---|
 | Name | Bookmark-Tab Title |
-| Short description (≤ 132 chars) | Shows the name of your bookmark as the tab title whenever a bookmarked page is open. |
+| Short description (≤ 132 chars) | Names your tabs after your bookmarks: open a bookmarked page and its tab shows the bookmark's name. (from `_locales/en`, `extDescription`) |
 | Category | Chrome Web Store: Productivity → Tools · Edge: Productivity · Opera: Productivity |
 | Language | English (default), Croatian (`_locales/hr`) |
 | Website | https://github.com/bearvil/bookmark-tab-title |
@@ -55,7 +55,7 @@ Shows the name of the user's bookmark as the browser tab title whenever the page
 | Host permissions `http://*/*`, `https://*/*` | Any website can be a bookmark, so the bundled content script must be able to run on any http/https page to set its document title to the bookmark name, and the service worker needs the tab URL to match it against bookmarks. The extension makes no network requests and does not read page content. |
 | `webNavigation` | Detects the URL a page load started from before a same-site server redirect (e.g. a bookmark for example.com that redirects to example.com/login), so the bookmark name is still applied, and detects in-page (history API) navigation so the title stays correct in single-page apps. |
 | `scripting` | Used only when the extension is installed or updated, to inject its own bundled content script into tabs that were already open, so it works without reloading every tab. No remote or dynamically generated code is executed. |
-| `storage` | `chrome.storage.sync` keeps the user's per-bookmark scope setting (the bookmark URLs with a wider scope than "only this address", and the text for "address contains"). `chrome.storage.session` (held in memory, cleared when the tab or browser closes) remembers, per tab, the URLs its current page was loaded from and the bookmarked addresses the tab visited on its current site, while the service worker is idle. |
+| `storage` | `chrome.storage.sync` keeps only the user's own settings, and only where they differ from the defaults: the scope of a bookmark name (bookmark URLs with a wider scope than "only this address", and the text for "address contains"), whether the page's own title is added after the name (for all bookmarks and per bookmark), and whether bookmark names are turned off (for all bookmarks and per bookmark). `chrome.storage.local` remembers how the settings page is shown (folders or one list, sort order, open folders). `chrome.storage.session` (held in memory, cleared when the tab or browser closes) remembers, per tab, the URLs its current page was loaded from and the bookmarked addresses the tab visited on its current site, while the service worker is idle. Nothing is sent anywhere. |
 | Remote code | None. All code is in the package; no remote scripts, no `eval`. |
 
 ## Privacy practices (Chrome Web Store)
