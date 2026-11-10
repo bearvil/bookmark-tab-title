@@ -1,4 +1,5 @@
-// Keeps the tab title equal to the bookmark name, even when the page changes it (e.g. Gmail's unread count).
+// Keeps the tab title equal to the bookmark name, even when the page changes it (e.g. Gmail's unread count);
+// with the "add the page's own title" option, the bookmark name followed by the page's current title.
 (() => {
   const OBSERVE = { childList: true, subtree: true, characterData: true };
   // The page's own title lives on <html>, so a second copy of this script (after an extension update)
@@ -6,13 +7,24 @@
   const root = document.documentElement;
   const ORIGINAL = 'bookmarkTabTitleOriginal';
   const MAX_PER_SECOND = 100;
+  const SEPARATOR = ' — ';
   let wanted = null;
+  let append = false;
+  let base = null; // the last title the page set as a whole, not as an edit of ours
   let applied = null; // title set by the extension, so it is never mistaken for the page's own title
   let observer = null;
   let burst = 0;
   let burstStart = 0;
 
   const pageTitle = () => root.dataset[ORIGINAL] ?? document.title;
+
+  // document.title reads back with whitespace collapsed; the title is built the same way, so it compares equal.
+  const collapse = (text) => text.replace(/[\t\n\f\r ]+/g, ' ').trim();
+  const titleFor = (own) => {
+    const name = collapse(wanted);
+    const page = collapse(own);
+    return append && page && page !== name ? `${name}${SEPARATOR}${page}` : name;
+  };
 
   function restore() {
     observer?.disconnect();
@@ -28,7 +40,23 @@
       restore();
       return;
     }
-    if (wanted === null || document.title === wanted) return;
+    if (wanted === null) return;
+    // The page set a title of its own. With the page title added, a page that edits the current title
+    // ("(1) " + document.title) edits ours: its edit is applied to the last title it set as a whole instead,
+    // so the bookmark name is never repeated and the title does not grow.
+    if (document.title !== applied) {
+      if (append && applied?.includes(SEPARATOR) && document.title.includes(applied)) {
+        root.dataset[ORIGINAL] = document.title.replace(applied, base ?? pageTitle());
+      } else {
+        base = document.title;
+        root.dataset[ORIGINAL] = base;
+      }
+    }
+    const next = titleFor(pageTitle());
+    if (document.title === next) {
+      applied = next;
+      return;
+    }
     // Another script keeps resetting the title: back off instead of fighting it forever.
     const now = performance.now();
     if (now - burstStart > 1000) {
@@ -41,8 +69,7 @@
       setTimeout(observe, 2000);
       return;
     }
-    if (document.title !== applied) root.dataset[ORIGINAL] = document.title;
-    document.title = applied = wanted;
+    document.title = applied = next;
   }
 
   // While the page is parsing, <head> may not exist yet, so the whole document is observed until DOMContentLoaded.
@@ -56,9 +83,10 @@
     apply();
   }
 
-  function setWanted(title) {
+  function setWanted(title, withPageTitle) {
     const hadTitle = wanted !== null;
     wanted = title || null;
+    append = withPageTitle === true;
     if (wanted !== null) {
       // A previous copy may already show the bookmark name; treat it as ours.
       if (root.dataset[ORIGINAL] !== undefined) applied = document.title;
@@ -69,8 +97,8 @@
   }
 
   chrome.runtime.onMessage.addListener((msg) => {
-    if (msg?.type === 'set-title') setWanted(msg.title);
+    if (msg?.type === 'set-title') setWanted(msg.title, msg.append);
   });
 
-  chrome.runtime.sendMessage({ type: 'get-title' }).then((res) => setWanted(res?.title), () => {});
+  chrome.runtime.sendMessage({ type: 'get-title' }).then((res) => setWanted(res?.title, res?.append), () => {});
 })();

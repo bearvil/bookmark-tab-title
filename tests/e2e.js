@@ -23,6 +23,8 @@ const routes = {
   '/host/b': page('Host B', '<a id="away" href="__AWAY__">away</a>'),
   '/plain2': page('Plain two'),
   // Like Gmail: the page keeps changing its own title.
+  // Adds a counter to whatever the title is now, like pages that do "(n) " + document.title.
+  '/prefix': page('Prefix', `<script>let n = 0; setInterval(() => { document.title = '(' + ++n + ') ' + document.title.replace(/^\\(\\d+\\) /, ''); }, 100);</script>`),
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
 
@@ -82,6 +84,16 @@ async function check(name, fn) {
   } catch (err) {
     results.push([false, `${name} — ${err.message}`]);
   }
+}
+async function expectTitleLike(p, pattern, timeout = 3000) {
+  const end = Date.now() + timeout;
+  let actual;
+  while (Date.now() < end) {
+    actual = await p.title();
+    if (pattern.test(actual)) return;
+    await p.waitForTimeout(50);
+  }
+  throw new Error(`expected ${pattern}, got "${actual}"`);
 }
 async function expectTitle(p, expected, timeout = 3000) {
   const end = Date.now() + timeout;
@@ -409,6 +421,50 @@ await check('popup on a page that is not a bookmark can bookmark it', async () =
   await popup.close();
   await expectTitle(fresh, 'Fresh bookmark');
   await fresh.close();
+});
+const appendSwitch = async (on) => {
+  const options = await optionsPage();
+  if ((await options.isChecked('#append-page-title')) !== on) await options.click('#append-page-title');
+  await options.waitForTimeout(200);
+  const checked = await options.isChecked('#append-page-title');
+  await options.close();
+  if (checked !== on) throw new Error(`switch is ${checked}`);
+};
+await check('page title option is off by default', async () => {
+  const options = await optionsPage();
+  const checked = await options.isChecked('#append-page-title');
+  await options.close();
+  if (checked) throw new Error('switched on');
+});
+await check('page title option on → "bookmark name — page title", following the page', async () => {
+  const mail = await context.newPage();
+  await mail.goto(`${base}/dyn`);
+  await expectTitle(mail, 'Mail');
+  await appendSwitch(true);
+  await expectTitleLike(mail, /^Mail — \(\d+\) Inbox$/);
+  const first = await mail.title();
+  await mail.waitForTimeout(300);
+  await expectTitleLike(mail, /^Mail — \(\d+\) Inbox$/, 200);
+  if ((await mail.title()) === first) throw new Error('the page title did not follow the page');
+  await mail.close();
+});
+await check('page title option: a page that edits its current title does not repeat the name', async () => {
+  await bookmark.create('Pre', `${base}/prefix`);
+  const pre = await context.newPage();
+  await pre.goto(`${base}/prefix`);
+  for (let i = 0; i < 10; i++) {
+    await pre.waitForTimeout(150);
+    await expectTitleLike(pre, /^Pre — \(\d+\) Prefix$/, 500);
+  }
+  await pre.close();
+});
+await check('page title option off again → only the bookmark name', async () => {
+  const mail = await context.newPage();
+  await mail.goto(`${base}/dyn`);
+  await expectTitleLike(mail, /^Mail — /);
+  await appendSwitch(false);
+  await expectTitle(mail, 'Mail');
+  await mail.close();
 });
 await check('context menu has one item per scope (clicking native menus is not scriptable)', async () => {
   // update() rejects for an unknown menu id.

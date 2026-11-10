@@ -43,7 +43,7 @@ Motion is limited to the switch, the radio and the toast and turns off with `pre
 
 ## Pages
 - **Popup** (`src/popup/`, 400 px wide; the content stays under Chrome's 600 px popup height): the bookmark that names the current tab (name field, why it is shown, and the scope as a choice list with the "address contains" text), "not a bookmark" with a primary "Bookmark this page", or "not available here".
-- **Settings** (`src/options/`): heading, search, all web bookmarks with their scope select (and text field for "address contains"), "How it works" with one row per scope in the order of the select, which bookmark wins, links.
+- **Settings** (`src/options/`): heading, the "add the page's own title" switch (a surface with one `.row`), search, all web bookmarks with their scope select (and text field for "address contains"), "How it works" with one row per scope in the order of the select, which bookmark wins, links.
 - **Context menu:** four radio items on web pages, one per scope, that mirror the active tab.
 
 Texts come from `_locales/` (`en`, `hr`) through `src/ui/i18n.js`; nothing visible is hard-coded in HTML.

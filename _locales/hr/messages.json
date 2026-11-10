@@ -107,6 +107,12 @@
   "scope_host": {
     "message": "Cijeli host"
   },
+  "appendTitleLabel": {
+    "message": "Dodaj i izvorni naslov stranice"
+  },
+  "appendTitleHint": {
+    "message": "Tab prikazuje „naziv bookmarka — naslov stranice”, npr. „Mail — (3) Inbox”. Za sve bookmarke."
+  },
   "containsPlaceholder": {
     "message": "npr. /u/1/ ili authuser=1"
   },

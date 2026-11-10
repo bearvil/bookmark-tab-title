@@ -13,7 +13,9 @@ globalThis.chrome = {
     onChanged: { addListener() {} },
   },
 };
-const { getAllScopes, getScope, migrateSettings, setScope } = await import('../src/settings.js');
+const { getAllScopes, getAppendPageTitle, getScope, migrateSettings, setAppendPageTitle, setScope } = await import(
+  '../src/settings.js'
+);
 
 test('exact is the default and is not stored', async () => {
   store.clear();
@@ -53,4 +55,14 @@ test('migration never overwrites a newer setting', async () => {
   store.set('scope:e.com', { scope: 'below' });
   await migrateSettings();
   assert.deepEqual(Object.fromEntries(store), { 'scope:e.com': { scope: 'below' } });
+});
+
+test('the page title option is off by default, stored only while on, and not a scope', async () => {
+  store.clear();
+  assert.equal(await getAppendPageTitle(), false);
+  await setAppendPageTitle(true);
+  assert.equal(await getAppendPageTitle(), true);
+  assert.deepEqual(await getAllScopes(), new Map());
+  await setAppendPageTitle(false);
+  assert.equal(store.size, 0);
 });

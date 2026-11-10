@@ -1,6 +1,6 @@
 // Options page (B): every web bookmark with how far its name reaches.
 import { hostOf, normalizeUrl, suggestText } from '../match.js';
-import { getAllScopes, onScopesChanged, setScope } from '../settings.js';
+import { getAllScopes, getAppendPageTitle, onAppendPageTitleChanged, onScopesChanged, setAppendPageTitle, setScope } from '../settings.js';
 import { localize, t } from '../ui/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -99,6 +99,12 @@ async function refreshScopes() {
   for (const row of $('list').children) showSetting(row, scopes.get(row.dataset.key) ?? { scope: 'exact' });
   showCount(bookmarks, scopes);
 }
+
+// One switch for every bookmark: the page's own title after the bookmark name.
+const showAppend = async () => ($('append-page-title').checked = await getAppendPageTitle());
+$('append-page-title').addEventListener('change', (e) => setAppendPageTitle(e.target.checked));
+onAppendPageTitleChanged(showAppend);
+showAppend();
 
 $('search').addEventListener('input', render);
 onScopesChanged(refreshScopes);

@@ -46,6 +46,24 @@ export function onScopesChanged(callback) {
   });
 }
 
+// One option for every bookmark: add the page's own title after the bookmark name. Off by default (not stored).
+const APPEND_KEY = 'appendPageTitle';
+
+export async function getAppendPageTitle() {
+  return (await chrome.storage.sync.get(APPEND_KEY))[APPEND_KEY] === true;
+}
+
+export async function setAppendPageTitle(on) {
+  if (on) await chrome.storage.sync.set({ [APPEND_KEY]: true });
+  else await chrome.storage.sync.remove(APPEND_KEY);
+}
+
+export function onAppendPageTitleChanged(callback) {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'sync' && APPEND_KEY in changes) callback();
+  });
+}
+
 // "Keep on whole host" switched on → the "whole host" scope, unless the bookmark already has a newer setting.
 // Runs on install, update and browser start (an older version on another device may still sync old keys).
 export async function migrateSettings() {

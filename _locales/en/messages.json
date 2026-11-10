@@ -109,6 +109,12 @@
   "scope_host": {
     "message": "The whole site"
   },
+  "appendTitleLabel": {
+    "message": "Add the page's own title"
+  },
+  "appendTitleHint": {
+    "message": "The tab shows “bookmark name — page title”, e.g. “Mail — (3) Inbox”. For every bookmark."
+  },
   "containsPlaceholder": {
     "message": "e.g. /u/1/ or authuser=1"
   },

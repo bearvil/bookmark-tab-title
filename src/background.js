@@ -1,11 +1,19 @@
 import { buildIndex, hostOf, nextTrail, originOf, resolve, SCOPES, siteOf, suggestText } from './match.js';
-import { getAllScopes, migrateSettings, onScopesChanged, setScope } from './settings.js';
+import {
+  getAllScopes,
+  getAppendPageTitle,
+  migrateSettings,
+  onAppendPageTitleChanged,
+  onScopesChanged,
+  setScope,
+} from './settings.js';
 
 const WEB_PAGES = ['http://*/*', 'https://*/*'];
 const MENU_PREFIX = 'scope-';
 
 let indexPromise = null;
 let scopesPromise = null;
+let appendPromise = null;
 
 function getIndex() {
   indexPromise ??= chrome.bookmarks.getTree().then(buildIndex);
@@ -15,6 +23,11 @@ function getIndex() {
 function getScopes() {
   scopesPromise ??= getAllScopes();
   return scopesPromise;
+}
+
+function getAppend() {
+  appendPromise ??= getAppendPageTitle();
+  return appendPromise;
 }
 
 // Per-tab state, in storage.session because the service worker shuts down when idle:
@@ -60,9 +73,15 @@ async function tabState(tab) {
 
 const titleOf = (state) => state.bookmark?.title ?? null;
 
+// What the content script needs: the bookmark name, and whether the page's own title goes after it.
+async function titleMessage(tab) {
+  const [state, append] = await Promise.all([tabState(tab), getAppend()]);
+  return { title: titleOf(state), append };
+}
+
 async function pushTitle(tab) {
-  const title = titleOf(await tabState(tab));
-  chrome.tabs.sendMessage(tab.id, { type: 'set-title', title }, { frameId: 0 }).catch(() => {});
+  const message = await titleMessage(tab);
+  chrome.tabs.sendMessage(tab.id, { type: 'set-title', ...message }, { frameId: 0 }).catch(() => {});
 }
 
 async function refreshAllTabs() {
@@ -89,6 +108,7 @@ function onBookmarksChanged() {
 
 function onSettingsChanged() {
   scopesPromise = null;
+  appendPromise = null;
   scheduleRefresh();
 }
 
@@ -195,10 +215,11 @@ chrome.bookmarks.onImportEnded.addListener(() => {
   onBookmarksChanged();
 });
 onScopesChanged(onSettingsChanged);
+onAppendPageTitleChanged(onSettingsChanged);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'get-title' && sender.tab && sender.frameId === 0) {
-    tabState(sender.tab).then((state) => sendResponse({ title: titleOf(state) }));
+    titleMessage(sender.tab).then(sendResponse);
     return true;
   }
   // From the popup: only the extension's own pages may ask for a tab's state.
