@@ -12,6 +12,7 @@ When the page in a tab is one of your bookmarks, the tab shows the bookmark's na
 [![License: MIT](https://img.shields.io/badge/license-MIT-0B4F58)](LICENSE)
 ![Manifest V3](https://img.shields.io/badge/manifest-v3-5EEAD4)
 ![No tracking](https://img.shields.io/badge/tracking-none-FB8742)
+[![Website](https://img.shields.io/badge/website-bearvil.github.io-0B4F58)](https://bearvil.github.io/work#bookmark-tab-title)
 
 Chrome · Edge · Opera · Brave · Vivaldi
 
