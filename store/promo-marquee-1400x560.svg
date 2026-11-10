@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560" width="1400" height="560">
+  <title>Bookmark-Tab Title: marquee promo tile</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&amp;display=block');
+      text { font-family: 'Nunito', 'Avenir Next', system-ui, sans-serif; }
+      .title { font-size: 68px; font-weight: 800; letter-spacing: -1px; fill: #F5F4FB; }
+      .accent { fill: #5EEAD4; }
+      .tagline { font-size: 28px; font-weight: 600; fill: #C9DEDC; }
+      .chip { font-size: 17px; font-weight: 700; fill: #C9DEDC; }
+      .label { font-size: 15px; font-weight: 800; letter-spacing: 1.5px; fill: #9DB9B7; }
+      .tab-muted { font-size: 19px; font-weight: 700; fill: #9DB9B7; }
+      .tab-active { font-size: 19px; font-weight: 800; fill: #F5F4FB; }
+    </style>
+    <!-- Background: Astra palette, dark variant (as the small promo tile) -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#002E34"/>
+      <stop offset="0.2" stop-color="#0D2122"/>
+      <stop offset="0.45" stop-color="#002E34"/>
+      <stop offset="0.65" stop-color="#144E4E"/>
+      <stop offset="0.85" stop-color="#093537"/>
+      <stop offset="1" stop-color="#002E34"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#5EEAD4" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#5EEAD4" stop-opacity="0"/>
+    </radialGradient>
+    <!-- App icon (same geometry as icons/icon-toolbar.svg) -->
+    <symbol id="icon" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="7" fill="#083F47"/>
+      <rect x="0.25" y="0.25" width="31.5" height="31.5" rx="6.75" fill="none" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="0.5"/>
+      <path d="M12 11 H20 V26 L16 22 L12 26 Z" fill="#FB8742"/>
+      <rect x="6" y="6" width="20" height="6" rx="2" fill="#5EEAD4"/>
+    </symbol>
+  </defs>
+
+  <rect width="1400" height="560" fill="url(#bg)"/>
+
+  <!-- Left: icon, name, tagline, promises -->
+  <circle cx="160" cy="192" r="150" fill="url(#glow)"/>
+  <use href="#icon" x="96" y="128" width="128" height="128"/>
+  <text class="title" x="256" y="184">Bookmark-Tab</text>
+  <text class="title accent" x="256" y="256">Title</text>
+  <text class="tagline" x="96" y="346">Tabs named the way you named your bookmarks.</text>
+  <rect x="96" y="388" width="168" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.07" stroke="#5EEAD4" stroke-opacity="0.35"/>
+  <text class="chip" x="180.0" y="414" text-anchor="middle">No tracking</text>
+  <rect x="280" y="388" width="220" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.07" stroke="#5EEAD4" stroke-opacity="0.35"/>
+  <text class="chip" x="390.0" y="414" text-anchor="middle">No network requests</text>
+  <rect x="516" y="388" width="168" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.07" stroke="#5EEAD4" stroke-opacity="0.35"/>
+  <text class="chip" x="600.0" y="414" text-anchor="middle">Open source</text>
+
+  <!-- Right: the same tabs before and after -->
+  <rect x="794" y="112" width="532" height="336" rx="24" fill="#FFFFFF" fill-opacity="0.04" stroke="#FFFFFF" stroke-opacity="0.10"/>
+  <text class="label" x="826" y="158">THE SITE'S TITLES</text>
+  <g>
+    <path d="M814 224 Q822 224 822 216 V184 Q822 176 830 176 H1038 Q1046 176 1046 184 V216 Q1046 224 1054 224 Z" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1"/>
+    <circle cx="844" cy="201" r="7" fill="#9DB9B7" fill-opacity="0.6"/>
+    <text class="tab-muted" x="860" y="207">Inbox (3)</text>
+    <path d="M1066 224 Q1074 224 1074 216 V184 Q1074 176 1082 176 H1290 Q1298 176 1298 184 V216 Q1298 224 1306 224 Z" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1"/>
+    <circle cx="1096" cy="201" r="7" fill="#9DB9B7" fill-opacity="0.6"/>
+    <text class="tab-muted" x="1112" y="207">Dashboard</text>
+  </g>
+  <path d="M1060 246 V286 M1048 274 L1060 287 L1072 274" fill="none" stroke="#5EEAD4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="label" x="826" y="324">YOUR BOOKMARK NAMES</text>
+  <g>
+    <path d="M814 392 Q822 392 822 384 V352 Q822 344 830 344 H1038 Q1046 344 1046 352 V384 Q1046 392 1054 392 Z" fill="#FFFFFF" fill-opacity="0.14" stroke="#5EEAD4" stroke-opacity="0.7" stroke-width="1.5"/>
+    <circle cx="844" cy="369" r="7" fill="#9DB9B7" fill-opacity="0.6"/>
+    <text class="tab-active" x="860" y="375">Mail – work</text>
+    <path d="M1010 344 H1024 V372 L1017 366 L1010 372 Z" fill="#FB8742"/>
+    <path d="M1066 392 Q1074 392 1074 384 V352 Q1074 344 1082 344 H1290 Q1298 344 1298 352 V384 Q1298 392 1306 392 Z" fill="#FFFFFF" fill-opacity="0.14" stroke="#5EEAD4" stroke-opacity="0.7" stroke-width="1.5"/>
+    <circle cx="1096" cy="369" r="7" fill="#9DB9B7" fill-opacity="0.6"/>
+    <text class="tab-active" x="1112" y="375">Admin – dev</text>
+    <path d="M1262 344 H1276 V372 L1269 366 L1262 372 Z" fill="#FB8742"/>
+  </g>
+</svg>

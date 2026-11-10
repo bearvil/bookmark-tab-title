@@ -70,6 +70,7 @@ Shows the name of the user's bookmark as the browser tab title whenever the page
 | Store icon | `icons/icon-128.png` | 128×128 |
 | Screenshot | `store/screenshot-1280x800.png` | 1280×800 |
 | Small promo tile | `store/promo-small-440x280.png` | 440×280 |
+| Marquee promo tile | `store/promo-marquee-1400x560.png` | 1400×560 |
 
 ## Package
 

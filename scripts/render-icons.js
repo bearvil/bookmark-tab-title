@@ -1,7 +1,7 @@
 // Renders the extension icons and store graphics from their SVG sources to PNG
 // using the Playwright Chromium that is already a dev dependency.
 //
-// Usage: node scripts/render-icons.js
+// Usage: node scripts/render-icons.js [part of an output path, e.g. marquee]
 //
 // Store SVGs load the Nunito font from Google Fonts, so they are rendered
 // inline in a page (not as <img>) and the script waits for fonts to load.
@@ -21,12 +21,14 @@ const jobs = [
   // 128 px uses the master: 96 px artwork with a 16 px transparent margin.
   { src: 'icons/icon.svg', out: 'icons/icon-128.png', w: 128, h: 128 },
   { src: 'store/promo-small-440x280.svg', out: 'store/promo-small-440x280.png', w: 440, h: 280, opaque: true },
+  { src: 'store/promo-marquee-1400x560.svg', out: 'store/promo-marquee-1400x560.png', w: 1400, h: 560, opaque: true },
   { src: 'store/screenshot-1280x800.svg', out: 'store/screenshot-1280x800.png', w: 1280, h: 800, opaque: true },
 ];
 
+const only = process.argv[2];
 const browser = await chromium.launch();
 try {
-  for (const job of jobs) {
+  for (const job of jobs.filter((j) => !only || j.out.includes(only))) {
     const svg = await readFile(path.join(root, job.src), 'utf8');
     const page = await browser.newPage({
       viewport: { width: job.w, height: job.h },
