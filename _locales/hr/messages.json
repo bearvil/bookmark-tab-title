@@ -5,14 +5,6 @@
   "extDescription": {
     "message": "Kad je otvorena stranica spremljena kao bookmark, naslov taba postaje naziv bookmarka."
   },
-  "menuKeepOnHost": {
-    "message": "Zadrži naziv bookmarka na cijelom $HOST$",
-    "placeholders": {
-      "host": {
-        "content": "$1"
-      }
-    }
-  },
   "popupAllBookmarks": {
     "message": "Svi bookmarki"
   },
@@ -38,30 +30,19 @@
     "message": "Spremljeno"
   },
   "openedFrom": {
-    "message": "Ovaj tab je otvoren iz ovog bookmarka."
-  },
-  "keepOnHostLabel": {
-    "message": "Zadrži naziv na cijelom hostu"
-  },
-  "keepOnHostHint": {
-    "message": "Kad je uključeno, tab zadržava ovaj naziv na svakoj stranici hosta $HOST$, ne samo na adresi bookmarka.",
-    "placeholders": {
-      "host": {
-        "content": "$1"
-      }
-    }
+    "message": "Prikazano jer je ovaj tab došao kroz ovaj bookmark."
   },
   "optionsHeading": {
     "message": "Nazivi koji ostaju"
   },
   "optionsIntro": {
-    "message": "Odaberi koji bookmarki zadržavaju svoj naziv u tabu na svakoj stranici svog hosta, ne samo na adresi bookmarka."
+    "message": "Odaberi dokle seže naziv svakog bookmarka: samo njegova adresa, stranice ispod nje, stranice čija adresa sadrži tekst ili cijeli host."
   },
   "optionsSearch": {
     "message": "Pretraži bookmarke"
   },
   "optionsCount": {
-    "message": "$ON$ od $TOTAL$ bookmarka zadržava naziv na cijelom hostu",
+    "message": "$ON$ od $TOTAL$ bookmarka zadržava naziv i izvan svoje adrese",
     "placeholders": {
       "on": {
         "content": "$1"
@@ -90,10 +71,80 @@
     "message": "Stranica iz bookmarka u tabu pokazuje naziv bookmarka umjesto svog naslova."
   },
   "optionsHow2": {
-    "message": "Kad je „cijeli host” uključen, tab zadržava naziv dok pregledavaš druge stranice istog hosta. Odlaskom s hosta to prestaje."
+    "message": "„Stranice ispod” i „cijeli host” prate tab: kad je tab bio na adresi bookmarka, naziv ostaje dok pregledava stranice ispod te adrese ili bilo gdje na hostu. Stranica s vlastitim bookmarkom pokazuje svoj naziv, a tab se zatim vraća na zadnji „cijeli host” bookmark kroz koji je prošao. Odlaskom s hosta to prestaje."
   },
   "optionsHow3": {
-    "message": "Prekidač je isti ovdje, u izborniku proširenja i kad desnom tipkom klikneš na stranicu."
+    "message": "„Adresa sadrži” vrijedi u svakom tabu, i za poveznice otvorene iz maila: svaka stranica hosta bookmarka čija adresa sadrži tekst dobiva naziv. Korisno s više Google računa — npr. /u/1/ ili authuser=1, ID developera u Play Consoleu ili project=… u Cloudu. Više mogućnosti odvoji razmakom."
+  },
+  "menuScope_exact": {
+    "message": "Naziv samo na ovoj adresi"
+  },
+  "menuScope_below": {
+    "message": "Naziv na ovoj adresi i stranicama ispod nje"
+  },
+  "menuScope_contains": {
+    "message": "Naziv na stranicama čija adresa sadrži „$TEXT$”",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "menuScope_containsEmpty": {
+    "message": "Naziv na stranicama čija adresa sadrži…"
+  },
+  "menuScope_host": {
+    "message": "Naziv na cijelom $HOST$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "scopeLabel": {
+    "message": "Gdje tab zadržava ovaj naziv"
+  },
+  "scope_exact": {
+    "message": "Samo ova adresa"
+  },
+  "scope_below": {
+    "message": "Ova adresa i stranice ispod nje"
+  },
+  "scope_contains": {
+    "message": "Stranice čija adresa sadrži"
+  },
+  "scope_host": {
+    "message": "Cijeli host"
+  },
+  "containsPlaceholder": {
+    "message": "npr. /u/1/ ili authuser=1"
+  },
+  "containsHint": {
+    "message": "Vrijedi u svakom tabu na $HOST$, i za poveznice otvorene iz maila. Više mogućnosti odvoji razmakom.",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "containsDetail": {
+    "message": "Na $HOST$, u svakom tabu",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "shownContains": {
+    "message": "Prikazano jer adresa sadrži „$TEXT$”.",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsHow4": {
+    "message": "Izbor je isti ovdje, u izborniku proširenja i kad desnom tipkom klikneš na stranicu."
   },
   "privacyPolicy": {
     "message": "Pravila privatnosti"

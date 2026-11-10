@@ -7,6 +7,3 @@ body {
   gap: var(--space-lg);
 }
 
-.hint {
-  padding: 0 var(--space-xs);
-}

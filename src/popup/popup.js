@@ -1,5 +1,6 @@
-// Popup (A): the bookmark and the "keep on whole host" switch of the page in the current tab.
-import { setKeepOnHost } from '../settings.js';
+// Popup (A): the bookmark that names the page in the current tab, and how far its name reaches.
+import { hostOf, normalizeUrl, suggestText } from '../match.js';
+import { getScope, setScope } from '../settings.js';
 import { localize, t } from '../ui/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -24,11 +25,38 @@ async function render() {
   if (!state?.supported) return show('state-unsupported');
   if (!state.bookmark) return show('state-none');
   show('state-bookmark');
-  if (document.activeElement !== $('name')) $('name').value = state.bookmark.title;
-  $('opened-from').hidden = state.direct;
-  $('host').textContent = state.host;
-  $('keep').checked = state.keepOnHost;
-  $('keep-hint').textContent = t('keepOnHostHint', state.host);
+  paint();
+}
+
+// After a change the popup stays on the bookmark it opened with, even when the tab is now named by another one
+// (or none): further changes must never land on a different bookmark.
+async function refreshScope() {
+  Object.assign(state, { scope: 'exact', text: undefined }, await getScope(state.bookmark.url));
+  paint();
+}
+
+function paint() {
+  const { bookmark } = state;
+  const host = hostOf(bookmark.url);
+  if (document.activeElement !== $('name')) $('name').value = bookmark.title;
+  const because = { below: t('openedFrom'), host: t('openedFrom'), contains: t('shownContains', state.text) }[state.via];
+  $('shown-because').hidden = !because;
+  $('shown-because').textContent = because ?? '';
+
+  const address = normalizeUrl(bookmark.url);
+  const details = {
+    exact: address,
+    below: `${address.replace(/\?.*$/, '')}/…`,
+    contains: t('containsDetail', host),
+    host,
+  };
+  for (const radio of document.querySelectorAll('[name="scope"]')) {
+    radio.checked = radio.value === state.scope;
+    document.querySelector(`[data-detail="${radio.value}"]`).textContent = details[radio.value];
+  }
+  $('contains-row').hidden = state.scope !== 'contains';
+  if (document.activeElement !== $('contains-text')) $('contains-text').value = state.text ?? '';
+  $('contains-hint').textContent = t('containsHint', host);
 }
 
 function flashSaved() {
@@ -55,8 +83,43 @@ $('name').addEventListener('keydown', (event) => {
   if (event.key === 'Enter') saveName().then(() => window.close());
 });
 
-$('keep').addEventListener('change', async () => {
-  if (state?.bookmark) await setKeepOnHost(state.bookmark.url, $('keep').checked);
+let textTimer = null;
+
+async function saveScope(scope) {
+  clearTimeout(textTimer);
+  const { url } = state.bookmark;
+  if (scope !== 'contains') {
+    await setScope(url, scope);
+    return refreshScope();
+  }
+  // Picking "contains" starts from the saved text or a suggestion from the bookmark's address.
+  const text = state.text || suggestText(url);
+  $('contains-text').value = text;
+  $('contains-row').hidden = false;
+  $('contains-text').focus();
+  await setScope(url, 'contains', text);
+  await refreshScope();
+}
+
+async function saveText() {
+  clearTimeout(textTimer);
+  textTimer = null;
+  if (!state?.bookmark) return;
+  await setScope(state.bookmark.url, 'contains', $('contains-text').value);
+  flashSaved();
+  await refreshScope();
+}
+
+$('scope').addEventListener('change', (event) => {
+  if (event.target.name === 'scope' && state?.bookmark) saveScope(event.target.value);
+});
+$('contains-text').addEventListener('input', () => {
+  clearTimeout(textTimer);
+  textTimer = setTimeout(saveText, SAVE_DELAY_MS);
+});
+$('contains-text').addEventListener('blur', () => textTimer && saveText());
+$('contains-text').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') saveText().then(() => window.close());
 });
 
 $('add-bookmark').addEventListener('click', async () => {

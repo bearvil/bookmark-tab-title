@@ -34,7 +34,7 @@
         </div>
 
         <ul id="list" class="surface list" aria-labelledby="list-label"></ul>
-        <p id="list-label" class="visually-hidden" data-i18n="keepOnHostLabel"></p>
+        <p id="list-label" class="visually-hidden" data-i18n="scopeLabel"></p>
 
         <div id="empty" class="surface empty" hidden>
           <p id="empty-title" class="text-title"></p>
@@ -47,6 +47,7 @@
         <p class="text-body tone-secondary" data-i18n="optionsHow1"></p>
         <p class="text-body tone-secondary" data-i18n="optionsHow2"></p>
         <p class="text-body tone-secondary" data-i18n="optionsHow3"></p>
+        <p class="text-body tone-secondary" data-i18n="optionsHow4"></p>
       </section>
 
       <footer class="footer text-caption tone-secondary">
@@ -57,12 +58,20 @@
     </div>
 
     <template id="row">
-      <li class="row">
+      <li class="row row--wrap">
         <label class="row__main">
           <span class="text-body text-strong truncate" data-field="title"></span>
           <span class="text-caption tone-secondary truncate" data-field="where"></span>
         </label>
-        <input class="switch" type="checkbox" role="switch" data-field="keep" />
+        <span class="select">
+          <select data-field="scope">
+            <option value="exact" data-i18n="scope_exact"></option>
+            <option value="below" data-i18n="scope_below"></option>
+            <option value="contains" data-i18n="scope_contains"></option>
+            <option value="host" data-i18n="scope_host"></option>
+          </select>
+        </span>
+        <input class="field field--compact row__full" type="text" autocomplete="off" spellcheck="false" data-field="text" hidden />
       </li>
     </template>
   </body>

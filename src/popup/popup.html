@@ -22,7 +22,7 @@
       </button>
     </header>
 
-    <!-- Bookmarked page (or a page on the host of the bookmark it was opened from) -->
+    <!-- The bookmark that names the page in this tab -->
     <main id="state-bookmark" class="stack" hidden>
       <section class="surface">
         <div class="row row--stack">
@@ -31,17 +31,46 @@
             <span id="saved" class="text-micro toast" data-visible="false" data-i18n="saved"></span>
           </label>
           <input id="name" class="field" type="text" autocomplete="off" spellcheck="false" />
-          <p id="opened-from" class="text-caption tone-secondary" data-i18n="openedFrom" hidden></p>
+          <p id="shown-because" class="text-caption tone-secondary" hidden></p>
         </div>
-        <label class="row" for="keep">
-          <span class="row__main">
-            <span class="text-body text-strong" data-i18n="keepOnHostLabel"></span>
-            <span><span id="host" class="pill truncate"></span></span>
-          </span>
-          <input id="keep" class="switch" type="checkbox" role="switch" />
-        </label>
       </section>
-      <p id="keep-hint" class="text-caption tone-secondary hint"></p>
+      <div class="group">
+        <p id="scope-label" class="text-caption tone-secondary group__label" data-i18n="scopeLabel"></p>
+        <div id="scope" class="surface choices" role="radiogroup" aria-labelledby="scope-label">
+          <label class="row choice">
+            <input class="radio" type="radio" name="scope" value="exact" />
+            <span class="row__main">
+              <span class="text-body text-strong" data-i18n="scope_exact"></span>
+              <span class="text-caption tone-secondary truncate" data-detail="exact"></span>
+            </span>
+          </label>
+          <label class="row choice">
+            <input class="radio" type="radio" name="scope" value="below" />
+            <span class="row__main">
+              <span class="text-body text-strong" data-i18n="scope_below"></span>
+              <span class="text-caption tone-secondary truncate" data-detail="below"></span>
+            </span>
+          </label>
+          <label class="row choice">
+            <input class="radio" type="radio" name="scope" value="contains" />
+            <span class="row__main">
+              <span class="text-body text-strong" data-i18n="scope_contains"></span>
+              <span class="text-caption tone-secondary truncate" data-detail="contains"></span>
+            </span>
+          </label>
+          <div id="contains-row" class="row row--stack" hidden>
+            <input id="contains-text" class="field field--compact" type="text" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:containsPlaceholder,aria-label:scope_contains" />
+            <p id="contains-hint" class="text-caption tone-secondary"></p>
+          </div>
+          <label class="row choice">
+            <input class="radio" type="radio" name="scope" value="host" />
+            <span class="row__main">
+              <span class="text-body text-strong" data-i18n="scope_host"></span>
+              <span class="text-caption tone-secondary truncate" data-detail="host"></span>
+            </span>
+          </label>
+        </div>
+      </div>
     </main>
 
     <!-- Web page that is not a bookmark -->

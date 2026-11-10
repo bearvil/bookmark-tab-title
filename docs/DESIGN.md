@@ -25,9 +25,12 @@ The popup and the settings page share one small design system. Pages only compos
 | `.text-*` + `.tone-*` | display, title, body, caption, micro · secondary, accent | All text |
 | `.brand` | — | Icon + name header |
 | `.surface` | `--2` (nested), `--pad` | Glass cards |
-| `.row` | `--stack` | Rows inside a surface, split by hairline dividers |
-| `.field`, `.field-label`, `.search` | — | Text inputs, search with icon |
+| `.group` | `__label` | A caption above a surface |
+| `.row` | `--stack`, `--wrap` (+ `.row__full`) | Rows inside a surface, split by hairline dividers |
+| `.field`, `.field-label`, `.search` | `.field--compact` | Text inputs, search with icon |
 | `.switch` | — | `<input type="checkbox" role="switch">` |
+| `.radio`, `.choices`, `.choice` | — | A surface of `.row` labels with a radio each; the selected row is tinted |
+| `.select` | — | `<span class="select"><select>` pill with a chevron |
 | `.button` | `--primary`, `--ghost`, `--block` | Pill buttons; one primary action per view |
 | `.icon-button`, `.icon` | — | Round glass icon button (≥ 40 px), 20 px stroke icons |
 | `.pill` | — | Accent label, e.g. the host name |
@@ -35,11 +38,11 @@ The popup and the settings page share one small design system. Pages only compos
 | `.empty` | — | Empty states with a title and a hint |
 | `.stack` | — | Vertical group spacing |
 
-Motion is limited to the switch and the toast and turns off with `prefers-reduced-motion`.
+Motion is limited to the switch, the radio and the toast and turns off with `prefers-reduced-motion`.
 
 ## Pages
-- **Popup** (`src/popup/`): the bookmark of the current tab (name field and "whole host" switch), "not a bookmark" with a primary "Bookmark this page", or "not available here".
-- **Settings** (`src/options/`): heading, search, all web bookmarks with their switch, "How it works", links.
-- **Context menu:** a checkbox item on web pages that mirrors the active tab.
+- **Popup** (`src/popup/`): the bookmark that names the current tab (name field, why it is shown, and the scope as a choice list with the "address contains" text), "not a bookmark" with a primary "Bookmark this page", or "not available here".
+- **Settings** (`src/options/`): heading, search, all web bookmarks with their scope select (and text field for "address contains"), "How it works", links.
+- **Context menu:** four radio items on web pages, one per scope, that mirror the active tab.
 
 Texts come from `_locales/` (`en`, `hr`) through `src/ui/i18n.js`; nothing visible is hard-coded in HTML.

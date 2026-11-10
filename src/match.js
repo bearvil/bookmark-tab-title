@@ -81,3 +81,119 @@ export function findBookmark(index, ...urls) {
   }
   return null;
 }
+
+// --- How far a bookmark name reaches beyond the bookmarked address.
+// exact:    only the bookmarked address (the default).
+// below:    the address and the pages under it, in a tab that came through the bookmark.
+// contains: every page of the bookmark's host whose address contains one of the given texts, in any tab.
+// host:     every page of the bookmark's host, in a tab that came through the bookmark.
+export const SCOPES = ['exact', 'below', 'contains', 'host'];
+
+const pathOf = (url) => url.pathname.replace(/\/+$/, '');
+
+// Is the page under the bookmarked address ("/docs" covers "/docs" and "/docs/a", not "/docsx")?
+export function covers(bookmarkUrl, pageUrl) {
+  let b, p;
+  try {
+    b = new URL(bookmarkUrl);
+    p = new URL(pageUrl);
+  } catch {
+    return false;
+  }
+  if (hostOf(bookmarkUrl) !== hostOf(pageUrl)) return false;
+  const base = pathOf(b);
+  const path = pathOf(p);
+  return path === base || path.startsWith(`${base}/`);
+}
+
+// Length of the longest space-separated text found in the address after the host (path, query and #fragment),
+// ignoring case; 0 when none is.
+export function containsMatch(text, pageUrl) {
+  let p;
+  try {
+    p = new URL(pageUrl);
+  } catch {
+    return 0;
+  }
+  const tail = `${p.pathname}${p.search}${p.hash}`.toLowerCase();
+  let decoded = tail;
+  try {
+    decoded = decodeURIComponent(tail);
+  } catch {}
+  const pieces = String(text ?? '').toLowerCase().split(/\s+/).filter(Boolean);
+  return Math.max(0, ...pieces.filter((piece) => tail.includes(piece) || decoded.includes(piece)).map((piece) => piece.length));
+}
+
+// A starting text for "address contains", from the bookmark's address: a resource id when there is one (stable),
+// else the Google account marker, else the path.
+export function suggestText(raw) {
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    return '';
+  }
+  const address = `${url.pathname}${url.search}${url.hash}`;
+  const patterns = [
+    /\/developers\/\d+/, // Google Play Console
+    /[?&#]project=[^&#]+/, // Google Cloud Console
+    /\/project\/[^/?#]+/, // Firebase
+    /\/a\/[^/?#]+\/g\/[^/?#]+/, // Google Groups of a Workspace domain
+    /[?&#]authuser=[^&#]+/, // Google account, as a number or an email
+    /\/u\/\d+\//, // Google account number
+  ];
+  for (const pattern of patterns) {
+    const found = address.match(pattern)?.[0];
+    if (found) return found.replace(/^[?&#]/, '');
+  }
+  return pathOf(url);
+}
+
+// Which bookmark names the page; the most specific one wins:
+// 1. a bookmark of this very address (also the address before a same-site redirect, see background.js);
+// 2. a "contains" bookmark of this host whose text is in the address (longest text first);
+// 3. a "below" bookmark the tab came through, with the page under its address (deepest first);
+// 4. the "whole host" bookmark the tab came through last.
+// scopes: Map of normalized bookmark URL → { scope, text }. trail: bookmark URLs the tab visited on this host,
+// oldest first.
+export function resolve(index, scopes, { url, loaded = [], trail = [] }) {
+  const direct = findBookmark(index, url, ...loaded);
+  const settingOf = (bookmark) => scopes.get(normalizeUrl(bookmark.url)) ?? { scope: 'exact' };
+  if (direct) return { bookmark: direct, via: 'address', ...settingOf(direct) };
+
+  const host = hostOf(url);
+  let best = null;
+  const offer = (bookmark, via, rank, weight) => {
+    if (!best || rank > best.rank || (rank === best.rank && weight >= best.weight)) best = { bookmark, via, rank, weight };
+  };
+  for (const [key, setting] of scopes) {
+    if (setting.scope !== 'contains') continue;
+    const bookmark = index.loose.get(key);
+    const length = bookmark && hostOf(bookmark.url) === host ? containsMatch(setting.text, url) : 0;
+    if (length) offer(bookmark, 'contains', 3, length);
+  }
+  trail.forEach((visited, i) => {
+    // The trail belongs to this host; a bookmark recorded after a same-site redirect may have another subdomain.
+    const bookmark = findBookmark(index, visited);
+    if (!bookmark) return;
+    const { scope } = settingOf(bookmark);
+    if (scope === 'below' && covers(bookmark.url, url)) offer(bookmark, 'below', 2, pathOf(new URL(bookmark.url)).length);
+    if (scope === 'host') offer(bookmark, 'host', 1, i);
+  });
+  return best ? { bookmark: best.bookmark, via: best.via, ...settingOf(best.bookmark) } : { bookmark: null };
+}
+
+// The tab's trail after a visit to a bookmarked address: the visit goes last; another host starts a new trail.
+export const TRAIL_LIMIT = 20;
+export function recordVisit(trail, host, bookmarkUrl) {
+  const urls = trail?.host === host ? trail.urls.filter((u) => u !== bookmarkUrl) : [];
+  return { host, urls: [...urls, bookmarkUrl].slice(-TRAIL_LIMIT) };
+}
+
+// The tab's trail after resolve() named its page: the address of a "below" or "whole host" bookmark is recorded
+// (other bookmarks never name other pages, and must not push those out of the trail), any page of another host
+// ends the trail.
+export function nextTrail(trail, host, found) {
+  if (found.via === 'address' && ['below', 'host'].includes(found.scope)) return recordVisit(trail, host, found.bookmark.url);
+  return trail?.host === host ? trail : null;
+}

@@ -1,25 +1,31 @@
-import { buildIndex, findBookmark, hostOf, originOf, siteOf } from './match.js';
-import { getKeepOnHost, onKeepOnHostChanged, setKeepOnHost } from './settings.js';
+import { buildIndex, hostOf, nextTrail, originOf, resolve, SCOPES, siteOf, suggestText } from './match.js';
+import { getAllScopes, migrateSettings, onScopesChanged, setScope } from './settings.js';
 
 const WEB_PAGES = ['http://*/*', 'https://*/*'];
-const MENU_ID = 'keep-on-host';
+const MENU_PREFIX = 'scope-';
 
 let indexPromise = null;
+let scopesPromise = null;
 
 function getIndex() {
   indexPromise ??= chrome.bookmarks.getTree().then(buildIndex);
   return indexPromise;
 }
 
+function getScopes() {
+  scopesPromise ??= getAllScopes();
+  return scopesPromise;
+}
+
 // Per-tab state, in storage.session because the service worker shuts down when idle:
 // - load: URLs the current page was really loaded from — the committed URL and, after a completed same-site server
 //   redirect, the URL before it (bookmark "example.com" → "example.com/login"). They keep the bookmark name through
 //   in-page (SPA) navigation, while a page can never borrow the name of another site's bookmark.
-// - anchor: the bookmark the tab last showed and its host. With "keep on whole host" switched on for that bookmark,
-//   the name stays on every page of that host until the tab leaves it.
+// - trail: the bookmarked addresses the tab visited on its current host, for the "below" and "whole host" scopes.
+//   Leaving the host starts a new trail; a link opened in a new tab takes the trail of the tab it came from.
 const pendingKey = (tabId) => `pending:${tabId}`;
 const loadKey = (tabId) => `load:${tabId}`;
-const anchorKey = (tabId) => `anchor:${tabId}`;
+const trailKey = (tabId) => `trail:${tabId}`;
 
 async function sessionGet(key) {
   return (await chrome.storage.session.get(key))[key];
@@ -35,23 +41,24 @@ async function take(key) {
 async function tabState(tab) {
   const host = hostOf(tab?.url);
   if (!host || !/^https?:/.test(tab.url)) return { supported: false };
-  const index = await getIndex();
-  const load = await sessionGet(loadKey(tab.id));
+  const [index, scopes, load, stored] = await Promise.all([
+    getIndex(),
+    getScopes(),
+    sessionGet(loadKey(tab.id)),
+    sessionGet(trailKey(tab.id)),
+  ]);
   // In-page navigation keeps the origin of the loaded page; anything else is a different page.
   const loaded = load && originOf(tab.url) === load.origin ? load.urls : [];
-  const direct = findBookmark(index, tab.url, ...loaded);
-  if (direct) {
-    await chrome.storage.session.set({ [anchorKey(tab.id)]: { url: direct.url, host } });
-    return { supported: true, host, bookmark: direct, direct: true, keepOnHost: await getKeepOnHost(direct.url) };
+  const trail = stored?.host === host ? stored : null;
+  const found = resolve(index, scopes, { url: tab.url, loaded, trail: trail?.urls ?? [] });
+  const next = nextTrail(trail, host, found);
+  if (JSON.stringify(next ?? null) !== JSON.stringify(stored ?? null)) {
+    await (next ? chrome.storage.session.set({ [trailKey(tab.id)]: next }) : chrome.storage.session.remove(trailKey(tab.id)));
   }
-  const anchor = await sessionGet(anchorKey(tab.id));
-  if (anchor && anchor.host !== host) await chrome.storage.session.remove(anchorKey(tab.id));
-  const anchored = anchor?.host === host ? findBookmark(index, anchor.url) : null;
-  if (!anchored) return { supported: true, host, bookmark: null };
-  return { supported: true, host, bookmark: anchored, direct: false, keepOnHost: await getKeepOnHost(anchored.url) };
+  return { supported: true, host, ...found, direct: found.via === 'address' };
 }
 
-const titleOf = (state) => (state.bookmark && (state.direct || state.keepOnHost) ? state.bookmark.title : null);
+const titleOf = (state) => state.bookmark?.title ?? null;
 
 async function pushTitle(tab) {
   const title = titleOf(await tabState(tab));
@@ -69,35 +76,53 @@ function onBookmarksChanged() {
   refreshAllTabs();
 }
 
-// --- Context menu (C): mirrors the active tab, like the popup.
+function onSettingsChanged() {
+  scopesPromise = null;
+  refreshAllTabs();
+}
+
+// --- Context menu (C): one radio item per scope, mirroring the active tab like the popup.
 
 function createMenu() {
   chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({
-      id: MENU_ID,
-      type: 'checkbox',
-      title: chrome.i18n.getMessage('menuKeepOnHost', ['…']),
-      contexts: ['page'],
-      documentUrlPatterns: WEB_PAGES,
-      visible: false,
-    });
+    for (const scope of SCOPES) {
+      chrome.contextMenus.create({
+        id: MENU_PREFIX + scope,
+        type: 'radio',
+        title: chrome.i18n.getMessage(`menuScope_${scope}`, ['…']),
+        contexts: ['page'],
+        documentUrlPatterns: WEB_PAGES,
+        visible: false,
+      });
+    }
   });
 }
+
+// The saved text, or a suggestion while "contains" is not chosen yet.
+const containsText = (state) => (state.scope === 'contains' ? state.text : suggestText(state.bookmark.url));
 
 async function updateMenu() {
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   const state = tab ? await tabState(tab) : { supported: false };
-  const visible = Boolean(state.bookmark);
-  const props = visible
-    ? { visible, checked: state.keepOnHost, title: chrome.i18n.getMessage('menuKeepOnHost', [state.host]) }
-    : { visible };
-  chrome.contextMenus.update(MENU_ID, props).catch(() => {});
+  for (const scope of SCOPES) {
+    const visible = Boolean(state.bookmark);
+    const subject = scope === 'contains' ? visible && containsText(state) : state.host;
+    const title = chrome.i18n.getMessage(subject ? `menuScope_${scope}` : 'menuScope_containsEmpty', [subject || '']);
+    const props = visible ? { visible, title, checked: state.scope === scope } : { visible };
+    chrome.contextMenus.update(MENU_PREFIX + scope, props).catch(() => {});
+  }
 }
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId !== MENU_ID || !tab) return;
+  const scope = String(info.menuItemId).slice(MENU_PREFIX.length);
+  if (!SCOPES.includes(scope) || !tab) return;
   const state = await tabState(tab);
-  if (state.bookmark) await setKeepOnHost(state.bookmark.url, info.checked);
+  if (!state.bookmark) return;
+  if (scope !== 'contains') return setScope(state.bookmark.url, scope);
+  const text = containsText(state);
+  // Nothing to suggest (a bookmark of the home page): let the person type the text.
+  if (!text) return chrome.tabs.create({ url: chrome.runtime.getURL(`src/options/options.html?edit=${state.bookmark.id}`) });
+  setScope(state.bookmark.url, 'contains', text);
 });
 
 chrome.tabs.onActivated.addListener(() => updateMenu());
@@ -123,6 +148,9 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url, trans
   const redirected = from && from !== url && transitionQualifiers.includes('server_redirect');
   const urls = redirected && siteOf(from) === siteOf(url) ? [url, from] : [url];
   await chrome.storage.session.set({ [loadKey(tabId)]: { origin: originOf(url), urls } });
+  // Leaving the host ends the trail, also through a page the extension does not run on (file:, data:, …).
+  const trail = await sessionGet(trailKey(tabId));
+  if (trail && trail.host !== hostOf(url)) await chrome.storage.session.remove(trailKey(tabId));
   // The content script may have asked before the load was stored.
   chrome.tabs.get(tabId).then(pushTitle, () => {});
 });
@@ -132,15 +160,23 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(({ tabId, frameId }) => {
   if (frameId === 0) chrome.tabs.get(tabId).then(pushTitle, () => {});
 });
 
+// A link opened in a new tab (Ctrl+click, target=_blank) keeps the trail of the tab it came from.
+chrome.webNavigation.onCreatedNavigationTarget.addListener(async ({ sourceTabId, tabId }) => {
+  const trail = await sessionGet(trailKey(sourceTabId));
+  if (!trail) return;
+  await chrome.storage.session.set({ [trailKey(tabId)]: trail });
+  chrome.tabs.get(tabId).then(pushTitle, () => {});
+});
+
 chrome.tabs.onRemoved.addListener((tabId) =>
-  chrome.storage.session.remove([pendingKey(tabId), loadKey(tabId), anchorKey(tabId)]),
+  chrome.storage.session.remove([pendingKey(tabId), loadKey(tabId), trailKey(tabId)]),
 );
 
 chrome.bookmarks.onCreated.addListener(onBookmarksChanged);
 chrome.bookmarks.onChanged.addListener(onBookmarksChanged);
 chrome.bookmarks.onRemoved.addListener(onBookmarksChanged);
 chrome.bookmarks.onImportEnded.addListener(onBookmarksChanged);
-onKeepOnHostChanged(refreshAllTabs);
+onScopesChanged(onSettingsChanged);
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'get-title' && sender.tab && sender.frameId === 0) {
@@ -155,6 +191,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  await migrateSettings();
   createMenu();
   updateMenu();
   // Tabs opened before installation, and tabs whose content script was orphaned by an update, need a fresh copy.
@@ -166,4 +203,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 });
 
 // Context menu items survive browser restarts, but their per-tab state does not.
-chrome.runtime.onStartup.addListener(() => updateMenu());
+chrome.runtime.onStartup.addListener(async () => {
+  await migrateSettings();
+  updateMenu();
+});

@@ -7,14 +7,6 @@
     "message": "Shows the name of your bookmark as the tab title whenever a bookmarked page is open.",
     "description": "Short description shown in the browser and the store (max 132 characters)."
   },
-  "menuKeepOnHost": {
-    "message": "Keep bookmark name on all of $HOST$",
-    "placeholders": {
-      "host": {
-        "content": "$1"
-      }
-    }
-  },
   "popupAllBookmarks": {
     "message": "All bookmarks"
   },
@@ -40,30 +32,19 @@
     "message": "Saved"
   },
   "openedFrom": {
-    "message": "This tab was opened from this bookmark."
-  },
-  "keepOnHostLabel": {
-    "message": "Keep the name on the whole host"
-  },
-  "keepOnHostHint": {
-    "message": "When on, the tab keeps this name on every page of $HOST$, not only on the bookmarked address.",
-    "placeholders": {
-      "host": {
-        "content": "$1"
-      }
-    }
+    "message": "Shown because this tab came through this bookmark."
   },
   "optionsHeading": {
     "message": "Names that stay"
   },
   "optionsIntro": {
-    "message": "Choose which bookmarks keep their name in the tab on every page of their host, not only on the bookmarked address."
+    "message": "Choose how far each bookmark name reaches: only its address, the pages under it, pages whose address contains a text, or the whole site."
   },
   "optionsSearch": {
     "message": "Search bookmarks"
   },
   "optionsCount": {
-    "message": "$ON$ of $TOTAL$ bookmarks keep their name on the whole host",
+    "message": "$ON$ of $TOTAL$ bookmarks keep their name beyond their own address",
     "placeholders": {
       "on": {
         "content": "$1"
@@ -92,10 +73,80 @@
     "message": "A bookmarked page shows the bookmark name as its tab title."
   },
   "optionsHow2": {
-    "message": "With “whole host” on, the tab keeps the name while you browse other pages of the same host. Leaving the host ends it."
+    "message": "“Pages under it” and “whole site” follow the tab: once the tab has been on the bookmarked address, the name stays while it browses under that address or anywhere on the site. A page with a bookmark of its own shows that name, and the tab then returns to the last “whole site” bookmark it came through. Leaving the site ends it."
   },
   "optionsHow3": {
-    "message": "The switch is the same here, in the extension's popup and when you right-click a page."
+    "message": "“Address contains” works in every tab, even for links opened from mail: any page of the bookmark's site whose address contains the text gets the name. Useful with several Google accounts — e.g. /u/1/ or authuser=1, a Play Console developer id or a Cloud project=… Separate alternatives with a space."
+  },
+  "menuScope_exact": {
+    "message": "Name only on this address"
+  },
+  "menuScope_below": {
+    "message": "Name on this address and the pages under it"
+  },
+  "menuScope_contains": {
+    "message": "Name on pages whose address contains “$TEXT$”",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "menuScope_containsEmpty": {
+    "message": "Name on pages whose address contains…"
+  },
+  "menuScope_host": {
+    "message": "Name on all of $HOST$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "scopeLabel": {
+    "message": "Where the tab keeps this name"
+  },
+  "scope_exact": {
+    "message": "Only this address"
+  },
+  "scope_below": {
+    "message": "This address and the pages under it"
+  },
+  "scope_contains": {
+    "message": "Pages whose address contains"
+  },
+  "scope_host": {
+    "message": "The whole site"
+  },
+  "containsPlaceholder": {
+    "message": "e.g. /u/1/ or authuser=1"
+  },
+  "containsHint": {
+    "message": "Works in every tab on $HOST$, also for links opened from mail. Separate alternatives with a space.",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "containsDetail": {
+    "message": "On $HOST$, in every tab",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "shownContains": {
+    "message": "Shown because the address contains “$TEXT$”.",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsHow4": {
+    "message": "The choice is the same here, in the extension's popup and when you right-click a page."
   },
   "privacyPolicy": {
     "message": "Privacy policy"
