@@ -50,4 +50,5 @@ for (const [i, [, url]] of SAMPLES.entries()) {
 
 console.log('Chromium is open with the extension and sample bookmarks. Close the window to finish.');
 await new Promise((resolve) => context.on('close', resolve));
-fs.rmSync(userDataDir, { recursive: true, force: true });
+// Chromium may still be writing its profile for a moment after the window closes.
+fs.rmSync(userDataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
