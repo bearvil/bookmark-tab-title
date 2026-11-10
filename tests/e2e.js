@@ -25,6 +25,8 @@ const routes = {
   // Like Gmail: the page keeps changing its own title.
   // Adds a counter to whatever the title is now, like pages that do "(n) " + document.title.
   '/prefix': page('Prefix', `<script>let n = 0; setInterval(() => { document.title = '(' + ++n + ') ' + document.title.replace(/^\\(\\d+\\) /, ''); }, 100);</script>`),
+  // A title with markup in it, shown by the browser as text.
+  '/markup': page('&lt;div style="color:#d40a0a"&gt;E4&lt;/div&gt; Admin &amp; more'),
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
 
@@ -614,6 +616,16 @@ await check('page title per bookmark (settings row) shows the choice and changes
   const own = await sw.evaluate(async () => Object.keys(await chrome.storage.sync.get(null)).filter((k) => k.startsWith('title:')));
   await appendSwitch(false);
   if (off || !preOn || own.length) throw new Error(JSON.stringify({ off, preOn, own }));
+});
+await check('page title with markup in it: only its text is added', async () => {
+  await bookmark.create('Mk', `${base}/markup`);
+  await sw.evaluate((k) => chrome.storage.sync.set({ [k]: true }), `title:${base.slice(7)}/markup`);
+  const mk = await context.newPage();
+  await mk.goto(`${base}/markup`);
+  await expectTitle(mk, 'Mk — E4 Admin & more');
+  await sw.evaluate((k) => chrome.storage.sync.remove(k), `title:${base.slice(7)}/markup`);
+  await expectTitle(mk, 'Mk');
+  await mk.close();
 });
 await check('context menu has one item per scope (clicking native menus is not scriptable)', async () => {
   // update() rejects for an unknown menu id.

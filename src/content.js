@@ -20,9 +20,12 @@
 
   // document.title reads back with whitespace collapsed; the title is built the same way, so it compares equal.
   const collapse = (text) => text.replace(/[\t\n\f\r ]+/g, ' ').trim();
+  // Some pages put markup in their title (e.g. an environment label as <div style="color:…">DEV</div>), which the
+  // browser shows as text: only the text between the tags is added.
+  const textOf = (title) => title.replace(/<\/?[a-z][^<>]*>/gi, ' ');
   const titleFor = (own) => {
     const name = collapse(wanted);
-    const page = collapse(own);
+    const page = collapse(textOf(own));
     return append && page && page !== name ? `${name}${SEPARATOR}${page}` : name;
   };
 
