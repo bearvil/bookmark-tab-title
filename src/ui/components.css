@@ -38,6 +38,11 @@ body {
 .tone-secondary { color: var(--text-secondary); }
 .tone-accent { color: var(--accent); }
 .tone-danger { color: var(--text-danger); }
+/* Something that is turned off but can still be changed */
+.muted { opacity: 0.5; transition: opacity 160ms ease; }
+/* A switch beside a field: <div class="field-row"><input class="switch"><span class="field-wrap">… */
+.field-row { display: flex; align-items: center; gap: var(--space-md); }
+.field-row > .field-wrap { flex: 1; min-width: 0; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Parts on one line: only the .truncate part (e.g. an address) shortens, the others always stay readable */
 .split { display: flex; gap: 0.3em; min-width: 0; white-space: nowrap; }

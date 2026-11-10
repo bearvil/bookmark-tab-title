@@ -16,11 +16,14 @@ globalThis.chrome = {
 const {
   getAllScopes,
   getAppendPageTitle,
+  getOnOff,
   getPageTitleFor,
   getScope,
   getTitleOverrides,
   migrateSettings,
   setAppendPageTitle,
+  setBookmarkOn,
+  setOnForAll,
   setPageTitleFor,
   setScope,
 } = await import(
@@ -89,4 +92,15 @@ test("a bookmark's own page title choice overrides the option for every bookmark
   await setPageTitleFor('https://e.com/b', true);
   assert.deepEqual(await getTitleOverrides(), new Map([['e.com/a', true]]));
   assert.deepEqual(await getAllScopes(), new Map());
+});
+
+test('on for every bookmark and per bookmark by default, stored only while off', async () => {
+  store.clear();
+  assert.deepEqual(await getOnOff(), { all: true, off: new Set() });
+  await setOnForAll(false);
+  await setBookmarkOn('https://www.e.com/a/', false);
+  assert.deepEqual(await getOnOff(), { all: false, off: new Set(['e.com/a']) });
+  await setOnForAll(true);
+  await setBookmarkOn('https://e.com/a', true);
+  assert.equal(store.size, 0);
 });

@@ -2,7 +2,7 @@
 // normalized address, so an imported setting applies to every bookmark with the same address, in any folder,
 // under any name, also one added later. No chrome APIs here: the settings page reads and writes the storage.
 import { normalizeUrl, SCOPES } from './match.js';
-import { APPEND_KEY, cleanScope, SCOPE_PREFIX, TITLE_PREFIX } from './settings.js';
+import { APPEND_KEY, cleanScope, DISABLED_KEY, OFF_PREFIX, SCOPE_PREFIX, TITLE_PREFIX } from './settings.js';
 
 export const APP = 'bookmark-tab-title';
 export const FORMAT = 1;
@@ -23,13 +23,21 @@ export function buildExport(stored, bookmarks, now = new Date()) {
   for (const [k, v] of Object.entries(stored)) {
     if (k.startsWith(SCOPE_PREFIX)) Object.assign(entry(k.slice(SCOPE_PREFIX.length)), cleanScope(v));
     if (k.startsWith(TITLE_PREFIX) && typeof v === 'boolean') entry(k.slice(TITLE_PREFIX.length)).pageTitle = v;
+    if (k.startsWith(OFF_PREFIX) && v === true) entry(k.slice(OFF_PREFIX.length)).on = false;
   }
   // An unknown stored value of an address without a bookmark reads as the default, which needs no entry.
   const list = [...entries.values()]
-    .filter((e) => names.has(e.address) || e.scope !== 'exact' || e.pageTitle !== undefined)
+    .filter((e) => names.has(e.address) || e.scope !== 'exact' || e.pageTitle !== undefined || e.on === false)
     .map((e) => (names.has(e.address) ? { address: e.address, name: names.get(e.address), ...e } : e))
     .sort((a, b) => a.address.localeCompare(b.address));
-  return { app: APP, format: FORMAT, exported: now.toISOString(), pageTitleForAll: stored[APPEND_KEY] === true, bookmarks: list };
+  return {
+    app: APP,
+    format: FORMAT,
+    exported: now.toISOString(),
+    onForAll: stored[DISABLED_KEY] !== true,
+    pageTitleForAll: stored[APPEND_KEY] === true,
+    bookmarks: list,
+  };
 }
 
 export const exportFileName = (now = new Date()) => `${APP}-settings-${now.toISOString().slice(0, 10)}.json`;
@@ -37,8 +45,8 @@ export const exportFileName = (now = new Date()) => `${APP}-settings-${now.toISO
 // An address from the file: a normalized address as exported, or a full URL.
 const keyOf = (address) => (typeof address === 'string' ? normalizeUrl(address.includes('://') ? address : `https://${address}`) : null);
 
-// Reads a settings file. Returns { error } ('file' | 'size') or { pageTitleForAll, entries, skipped }, where each
-// entry is { key, scope, text?, pageTitle? } and skipped counts the entries that were left out.
+// Reads a settings file. Returns { error } ('file' | 'size') or { onForAll, pageTitleForAll, entries, skipped },
+// where each entry is { key, scope, text?, pageTitle?, on? } and skipped counts the entries that were left out.
 export function parseBackup(text) {
   if (typeof text !== 'string' || text.length > MAX_FILE_BYTES) return { error: 'size' };
   let data;
@@ -58,10 +66,11 @@ export function parseBackup(text) {
     }
     const entry = { key, ...cleanScope(item) };
     if (typeof item.pageTitle === 'boolean') entry.pageTitle = item.pageTitle;
+    if (item.on === false) entry.on = false;
     entries.set(key, entry); // the last one of the same address wins
   }
-  const pageTitleForAll = typeof data.pageTitleForAll === 'boolean' ? data.pageTitleForAll : undefined;
-  return { pageTitleForAll, entries: [...entries.values()], skipped };
+  const flag = (value) => (typeof value === 'boolean' ? value : undefined);
+  return { onForAll: flag(data.onForAll), pageTitleForAll: flag(data.pageTitleForAll), entries: [...entries.values()], skipped };
 }
 
 // What an import writes: each address in the file gets exactly the file's setting (the default where the file
@@ -72,11 +81,15 @@ export function planImport(parsed, currentPageTitleForAll) {
   const remove = [];
   if (parsed.pageTitleForAll === true) set[APPEND_KEY] = true;
   if (parsed.pageTitleForAll === false) remove.push(APPEND_KEY);
+  if (parsed.onForAll === false) set[DISABLED_KEY] = true;
+  if (parsed.onForAll === true) remove.push(DISABLED_KEY);
   for (const e of parsed.entries) {
     if (e.scope === 'exact') remove.push(SCOPE_PREFIX + e.key);
     else set[SCOPE_PREFIX + e.key] = e.scope === 'contains' ? { scope: e.scope, text: e.text } : { scope: e.scope };
     if (e.pageTitle === undefined || e.pageTitle === all) remove.push(TITLE_PREFIX + e.key);
     else set[TITLE_PREFIX + e.key] = e.pageTitle;
+    if (e.on === false) set[OFF_PREFIX + e.key] = true;
+    else remove.push(OFF_PREFIX + e.key);
   }
   return { set, remove };
 }

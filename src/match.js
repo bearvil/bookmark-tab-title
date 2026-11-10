@@ -156,11 +156,14 @@ export function suggestText(raw) {
 // 3. a "below" bookmark the tab came through, with the page under its address (deepest first);
 // 4. the "whole host" bookmark the tab came through last.
 // scopes: Map of normalized bookmark URL → { scope, text }. trail: bookmark URLs the tab visited on this host,
-// oldest first.
-export function resolve(index, scopes, { url, loaded = [], trail = [] }) {
+// oldest first. off: normalized URLs of the bookmarks turned off, which never name a page; when the page's own
+// bookmark is one of them, it is returned as `own` (the popup shows it, so it can be turned on again).
+export function resolve(index, scopes, { url, loaded = [], trail = [], off = new Set() }) {
+  const isOff = (bookmark) => off.has(normalizeUrl(bookmark.url));
   const direct = findBookmark(index, url, ...loaded);
   const settingOf = (bookmark) => scopes.get(normalizeUrl(bookmark.url)) ?? { scope: 'exact' };
-  if (direct) return { bookmark: direct, via: 'address', ...settingOf(direct) };
+  if (direct && !isOff(direct)) return { bookmark: direct, via: 'address', ...settingOf(direct) };
+  const own = direct ? { bookmark: direct, via: 'address', ...settingOf(direct) } : undefined;
 
   const host = hostOf(url);
   let best = null;
@@ -170,18 +173,19 @@ export function resolve(index, scopes, { url, loaded = [], trail = [] }) {
   for (const [key, setting] of scopes) {
     if (setting.scope !== 'contains') continue;
     const bookmark = index.loose.get(key);
-    const length = bookmark && hostOf(bookmark.url) === host ? containsMatch(setting.text, url) : 0;
+    const length = bookmark && !isOff(bookmark) && hostOf(bookmark.url) === host ? containsMatch(setting.text, url) : 0;
     if (length) offer(bookmark, 'contains', 3, length);
   }
   trail.forEach((visited, i) => {
     // The trail belongs to this host; a bookmark recorded after a same-site redirect may have another subdomain.
     const bookmark = findBookmark(index, visited);
-    if (!bookmark) return;
+    if (!bookmark || isOff(bookmark)) return;
     const { scope } = settingOf(bookmark);
     if (scope === 'below' && covers(bookmark.url, url)) offer(bookmark, 'below', 2, pathOf(new URL(bookmark.url)).length);
     if (scope === 'host') offer(bookmark, 'host', 1, i);
   });
-  return best ? { bookmark: best.bookmark, via: best.via, ...settingOf(best.bookmark) } : { bookmark: null };
+  const rest = own ? { own } : {};
+  return best ? { bookmark: best.bookmark, via: best.via, ...settingOf(best.bookmark), ...rest } : { bookmark: null, ...rest };
 }
 
 // The tab's trail after a visit to a bookmarked address: the visit goes last; another host starts a new trail.

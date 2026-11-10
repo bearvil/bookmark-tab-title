@@ -87,12 +87,12 @@ test('plan: the file decides for its addresses, defaults are removed, a choice e
   };
   assert.deepEqual(planImport(parsed, true), {
     set: { 'scope:a.com': { scope: 'host' }, 'title:a.com': true, 'scope:c.com': { scope: 'contains', text: 'x' } },
-    remove: ['appendPageTitle', 'scope:b.com', 'title:b.com', 'title:c.com'],
+    remove: ['appendPageTitle', 'off:a.com', 'scope:b.com', 'title:b.com', 'off:b.com', 'title:c.com', 'off:c.com'],
   });
   // Without the option in the file the current one counts.
   assert.deepEqual(planImport({ entries: [{ key: 'a.com', scope: 'exact', pageTitle: true }], skipped: 0 }, true), {
     set: {},
-    remove: ['scope:a.com', 'title:a.com'],
+    remove: ['scope:a.com', 'title:a.com', 'off:a.com'],
   });
 });
 
@@ -104,5 +104,19 @@ test('summary: entries for bookmarks there are now, and for addresses without on
 test('a bookmark exported with the default gets the default back on import', () => {
   const file = buildExport({}, [{ title: 'e4', url: 'http://localhost:8440/' }], now);
   const plan = planImport(parseBackup(JSON.stringify(file)), false);
-  assert.deepEqual(plan, { set: {}, remove: ['appendPageTitle', 'scope:localhost:8440', 'title:localhost:8440'] });
+  assert.deepEqual(plan, {
+    set: {},
+    remove: ['appendPageTitle', 'disabled', 'scope:localhost:8440', 'title:localhost:8440', 'off:localhost:8440'],
+  });
+});
+
+test('turned off, for every bookmark and per bookmark, goes into the file and back', () => {
+  const file = buildExport({ disabled: true, 'off:e.com/docs': true }, bookmarks, now);
+  assert.equal(file.onForAll, false);
+  assert.equal(file.bookmarks.find((e) => e.address === 'e.com/docs').on, false);
+  assert.equal(file.bookmarks.find((e) => e.address === 'plain.com').on, undefined);
+  const { set } = planImport(parseBackup(JSON.stringify(file)), false);
+  assert.equal(set.disabled, true);
+  assert.equal(set['off:e.com/docs'], true);
+  assert.equal(set['off:plain.com'], undefined);
 });

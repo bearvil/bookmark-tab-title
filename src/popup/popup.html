@@ -13,6 +13,7 @@
     <header class="brand">
       <img class="brand__icon" src="../../icons/icon-toolbar.svg" alt="" />
       <p class="brand__name text-title truncate" data-i18n="extName"></p>
+      <input id="on-all" class="switch" type="checkbox" role="switch" data-i18n-attr="aria-label:onAllLabel,title:onAllLabel" />
       <button id="open-options" class="icon-button" type="button" data-i18n-attr="aria-label:popupAllBookmarks,title:popupAllBookmarks">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
@@ -33,10 +34,13 @@
               <input id="page-title" class="switch switch--small" type="checkbox" role="switch" data-i18n-attr="aria-label:pageTitleHint" />
             </label>
           </div>
-          <span class="field-wrap">
-            <input id="name" class="field field--dense" type="text" autocomplete="off" spellcheck="false" />
-            <span id="saved" class="text-micro toast field-wrap__note" data-visible="false" data-i18n="saved"></span>
-          </span>
+          <div class="field-row">
+            <input id="bookmark-on" class="switch" type="checkbox" role="switch" data-i18n-attr="aria-label:bookmarkOnLabel,title:bookmarkOnLabel" />
+            <span class="field-wrap">
+              <input id="name" class="field field--dense" type="text" autocomplete="off" spellcheck="false" />
+              <span id="saved" class="text-micro toast field-wrap__note" data-visible="false" data-i18n="saved"></span>
+            </span>
+          </div>
           <p id="shown-because" class="text-caption tone-secondary truncate" hidden></p>
         </div>
       </section>

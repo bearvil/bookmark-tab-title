@@ -1,6 +1,16 @@
 // Popup (A): the bookmark that names the page in the current tab, and how far its name reaches.
 import { hostOf, normalizeUrl, suggestText } from '../match.js';
-import { getPageTitleFor, getScope, onPageTitleChanged, setPageTitleFor, setScope } from '../settings.js';
+import {
+  getOnOff,
+  getPageTitleFor,
+  getScope,
+  onOnOffChanged,
+  onPageTitleChanged,
+  setBookmarkOn,
+  setOnForAll,
+  setPageTitleFor,
+  setScope,
+} from '../settings.js';
 import { localize, t } from '../ui/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -22,11 +32,36 @@ function show(id) {
 
 async function render() {
   state = tab ? await chrome.runtime.sendMessage({ type: 'tab-state', tabId: tab.id }) : { supported: false };
+  // The page's own bookmark turned off: the popup shows it, so it can be turned on again.
+  if (state?.supported && !state.bookmark && state.own) state = { ...state, ...state.own, own: undefined };
+  showOnOff();
   if (!state?.supported) return show('state-unsupported');
   if (!state.bookmark) return show('state-none');
   show('state-bookmark');
   paint();
   showPageTitle();
+}
+
+let onOff = { all: true, off: new Set() };
+
+// The switches for every bookmark and for this one, the note why the tab keeps the page title, and dimmed choices.
+async function showOnOff() {
+  onOff = await getOnOff();
+  $('on-all').checked = onOff.all;
+  if (!state?.bookmark) return;
+  const on = !onOff.off.has(normalizeUrl(state.bookmark.url));
+  $('bookmark-on').checked = on;
+  for (const id of ['name', 'scope']) $(id).classList.toggle('muted', !on || !onOff.all);
+  showNote();
+}
+
+function showNote() {
+  const on = !onOff.off.has(normalizeUrl(state.bookmark.url));
+  const because = { below: t('openedFrom'), host: t('openedFrom'), contains: t('shownContains', state.text) }[state.via];
+  const note = !onOff.all ? t('pausedNote') : !on ? t('bookmarkOffNote') : because;
+  $('shown-because').hidden = !note;
+  $('shown-because').textContent = note ?? '';
+  $('shown-because').title = note ?? '';
 }
 
 // This bookmark's "add the page title": its own choice, else the option for every bookmark.
@@ -45,10 +80,7 @@ function paint() {
   const { bookmark } = state;
   const host = hostOf(bookmark.url);
   if (document.activeElement !== $('name')) $('name').value = bookmark.title;
-  const because = { below: t('openedFrom'), host: t('openedFrom'), contains: t('shownContains', state.text) }[state.via];
-  $('shown-because').hidden = !because;
-  $('shown-because').textContent = because ?? '';
-  $('shown-because').title = because ?? '';
+  showNote();
 
   const address = normalizeUrl(bookmark.url);
   for (const radio of document.querySelectorAll('[name="scope"]')) radio.checked = radio.value === state.scope;
@@ -129,6 +161,15 @@ $('page-title').addEventListener('change', async (event) => {
   flashSaved();
 });
 onPageTitleChanged(showPageTitle);
+
+$('on-all').addEventListener('change', (event) => setOnForAll(event.target.checked));
+$('bookmark-on').addEventListener('change', async (event) => {
+  if (!state?.bookmark) return;
+  await setBookmarkOn(state.bookmark.url, event.target.checked);
+  flashSaved();
+});
+// The popup stays on its bookmark (see refreshScope), so only the switches and the note change.
+onOnOffChanged(showOnOff);
 
 $('add-bookmark').addEventListener('click', async () => {
   const [root] = await chrome.bookmarks.getTree();

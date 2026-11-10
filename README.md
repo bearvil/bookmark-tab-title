@@ -68,6 +68,7 @@ A page with a bookmark of its own shows that name, and the next page returns to 
 
 - **Toolbar popup**: the bookmark of the current page, its name, its reach and the page title switch.
 - **Settings page**: all bookmarks, by folder (collapsible, as in the browser) or as one list, filtered by reach and ordered as in the browser, by name, by site or by reach. The view, the order and the open folders are remembered on this device.
+- **On and off**: one switch turns bookmark names in tabs off for all bookmarks (the toolbar button then says OFF), and each bookmark has its own switch in the popup and at the start of its settings row. A bookmark that is off names no page, and the settings page can filter for the ones that are off.
 - **Settings file**: export the scopes and page title choices of all your bookmarks (also the ones left at the default) to a JSON file and import them, e.g. into another browser or from the development build into the store version. Settings belong to a bookmark's address, so they apply to every bookmark with the same address, also one added later. An import shows a summary first and only replaces the settings of the addresses in the file.
 - **Right-click menu** on the page.
 

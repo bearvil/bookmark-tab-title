@@ -2,8 +2,10 @@ import { buildIndex, hostOf, nextTrail, normalizeUrl, originOf, resolve, SCOPES,
 import {
   getAllScopes,
   getAppendPageTitle,
+  getOnOff,
   getTitleOverrides,
   migrateSettings,
+  onOnOffChanged,
   onPageTitleChanged,
   onScopesChanged,
   setScope,
@@ -16,6 +18,7 @@ let indexPromise = null;
 let scopesPromise = null;
 let appendPromise = null;
 let overridesPromise = null;
+let onOffPromise = null;
 
 function getIndex() {
   indexPromise ??= chrome.bookmarks.getTree().then(buildIndex);
@@ -35,6 +38,11 @@ function getAppend() {
 function getOverrides() {
   overridesPromise ??= getTitleOverrides();
   return overridesPromise;
+}
+
+function getOnOffCached() {
+  onOffPromise ??= getOnOff();
+  return onOffPromise;
 }
 
 // Per-tab state, in storage.session because the service worker shuts down when idle:
@@ -61,21 +69,23 @@ async function take(key) {
 async function tabState(tab) {
   const host = hostOf(tab?.url);
   if (!host || !/^https?:/.test(tab.url)) return { supported: false };
-  const [index, scopes, load, stored] = await Promise.all([
+  const [index, scopes, onOff, load, stored] = await Promise.all([
     getIndex(),
     getScopes(),
+    getOnOffCached(),
     sessionGet(loadKey(tab.id)),
     sessionGet(trailKey(tab.id)),
   ]);
   // In-page navigation keeps the origin of the loaded page; anything else is a different page.
   const loaded = load && originOf(tab.url) === load.origin ? load.urls : [];
   const trail = stored?.host === host ? stored : null;
-  const found = resolve(index, scopes, { url: tab.url, loaded, trail: trail?.urls ?? [] });
+  const found = resolve(index, scopes, { url: tab.url, loaded, trail: trail?.urls ?? [], off: onOff.off });
   const next = nextTrail(trail, host, found);
   if (JSON.stringify(next ?? null) !== JSON.stringify(stored ?? null)) {
     await (next ? chrome.storage.session.set({ [trailKey(tab.id)]: next }) : chrome.storage.session.remove(trailKey(tab.id)));
   }
-  return { supported: true, host, ...found, direct: found.via === 'address' };
+  // Turned off for every bookmark: everything is worked out as usual (the popup shows it), but no tab is renamed.
+  return { supported: true, host, ...found, direct: found.via === 'address', paused: !onOff.all };
 }
 
 const titleOf = (state) => state.bookmark?.title ?? null;
@@ -85,7 +95,7 @@ const titleOf = (state) => state.bookmark?.title ?? null;
 async function titleMessage(tab) {
   const [state, all, overrides] = await Promise.all([tabState(tab), getAppend(), getOverrides()]);
   const own = state.bookmark ? overrides.get(normalizeUrl(state.bookmark.url)) : undefined;
-  return { title: titleOf(state), append: own ?? all };
+  return { title: state.paused ? null : titleOf(state), append: own ?? all };
 }
 
 async function pushTitle(tab) {
@@ -119,6 +129,7 @@ function onSettingsChanged() {
   scopesPromise = null;
   appendPromise = null;
   overridesPromise = null;
+  onOffPromise = null;
   scheduleRefresh();
 }
 
@@ -226,6 +237,18 @@ chrome.bookmarks.onImportEnded.addListener(() => {
 });
 onScopesChanged(onSettingsChanged);
 onPageTitleChanged(onSettingsChanged);
+onOnOffChanged(() => {
+  onSettingsChanged();
+  updateBadge();
+});
+
+// Turned off for every bookmark: "OFF" on the toolbar button, so it is not forgotten.
+async function updateBadge() {
+  const { all } = await getOnOff();
+  chrome.action.setBadgeText({ text: all ? '' : chrome.i18n.getMessage('badgeOff') });
+  chrome.action.setBadgeBackgroundColor({ color: '#5b6b75' });
+  chrome.action.setTitle({ title: chrome.i18n.getMessage(all ? 'extName' : 'actionTitleOff') });
+}
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'get-title' && sender.tab && sender.frameId === 0) {
@@ -243,6 +266,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   await migrateSettings();
   createMenu();
   updateMenu();
+  updateBadge();
   // Tabs opened before installation, and tabs whose content script was orphaned by an update, need a fresh copy.
   if (reason !== 'install' && reason !== 'update') return;
   const tabs = await chrome.tabs.query({ url: WEB_PAGES });
@@ -255,4 +279,5 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 chrome.runtime.onStartup.addListener(async () => {
   await migrateSettings();
   updateMenu();
+  updateBadge();
 });

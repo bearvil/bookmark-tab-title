@@ -3,10 +3,14 @@ import { hostOf, normalizeUrl, SCOPES, suggestText } from '../match.js';
 import {
   getAllScopes,
   getAppendPageTitle,
+  getOnOff,
   getTitleOverrides,
+  onOnOffChanged,
   onPageTitleChanged,
   onScopesChanged,
   setAppendPageTitle,
+  setBookmarkOn,
+  setOnForAll,
   setPageTitleFor,
   setScope,
 } from '../settings.js';
@@ -18,7 +22,7 @@ const SAVE_DELAY_MS = 350;
 // How the list is shown, per device: view, order and the folders left open.
 const VIEW_KEY = 'optionsView';
 const SORTS = ['browser', 'name', 'host', 'scope'];
-const FILTERS = ['all', 'wider', ...SCOPES];
+const FILTERS = ['all', 'wider', ...SCOPES, 'off'];
 // "By reach" puts the bookmarks with a wider scope first, in the order of the scope select.
 const SCOPE_ORDER = [...SCOPES.slice(1), 'exact'];
 const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
@@ -33,6 +37,8 @@ let data = { folders: [], all: [] };
 let scopes = new Map();
 // The page title option: for every bookmark, and the bookmarks with their own choice.
 let pageTitle = { all: false, own: new Map() };
+// On or off: for every bookmark, and the bookmarks turned off.
+let onOff = { all: true, off: new Set() };
 
 async function loadView() {
   try {
@@ -66,8 +72,26 @@ async function loadBookmarks() {
 }
 
 const isFolder = (node) => Array.isArray(node.children);
+const isOff = (bookmark) => onOff.off.has(normalizeUrl(bookmark.url));
+// A bookmark in a choice of the filter.
+function inChoice(choice, bookmark) {
+  if (choice === 'all') return true;
+  if (choice === 'off') return isOff(bookmark);
+  const { scope } = settingOf(bookmark);
+  return choice === 'wider' ? scope !== 'exact' : scope === choice;
+}
 const settingOf = (bookmark) => scopes.get(normalizeUrl(bookmark.url)) ?? { scope: 'exact' };
 const pageTitleOf = (key) => pageTitle.own.get(key) ?? pageTitle.all;
+
+function showOn(row) {
+  const on = !onOff.off.has(row.dataset.key);
+  row.querySelector('[data-field="on"]').checked = on;
+  row.querySelector('.row__main').classList.toggle('muted', !on);
+}
+
+async function loadOnOff() {
+  onOff = await getOnOff();
+}
 
 async function loadPageTitle() {
   const [all, own] = await Promise.all([getAppendPageTitle(), getTitleOverrides()]);
@@ -78,10 +102,7 @@ function matcher() {
   const query = $('search').value.trim().toLowerCase();
   const filter = $('filter').value;
   const inSearch = (b) => !query || `${b.title} ${b.url} ${b.folder}`.toLowerCase().includes(query);
-  const inFilter = (b) => {
-    const { scope } = settingOf(b);
-    return filter === 'all' || (filter === 'wider' ? scope !== 'exact' : scope === filter);
-  };
+  const inFilter = (b) => inChoice(filter, b);
   return { inSearch, matches: (b) => inSearch(b) && inFilter(b), narrowed: Boolean(query) || filter !== 'all' };
 }
 
@@ -130,6 +151,11 @@ function renderRow(bookmark) {
   text.placeholder = t('containsPlaceholder');
   text.setAttribute('aria-label', `${t('scope_contains')}: ${bookmark.title}`);
   showSetting(row, settingOf(bookmark));
+  const onSwitch = row.querySelector('[data-field="on"]');
+  onSwitch.setAttribute('aria-label', `${t('bookmarkOnLabel')}: ${bookmark.title}`);
+  onSwitch.title = t('bookmarkOnLabel');
+  showOn(row);
+  onSwitch.addEventListener('change', () => setBookmarkOn(bookmark.url, onSwitch.checked));
   const titleSwitch = row.querySelector('[data-field="page-title"]');
   titleSwitch.setAttribute('aria-label', `${t('pageTitleShort')}: ${bookmark.title}`);
   titleSwitch.checked = pageTitleOf(row.dataset.key);
@@ -201,10 +227,7 @@ function showCounts() {
   const { inSearch } = matcher();
   const found = data.all.filter(inSearch);
   for (const option of $('filter').options) {
-    const n = found.filter((b) => {
-      const { scope } = settingOf(b);
-      return option.value === 'all' || (option.value === 'wider' ? scope !== 'exact' : scope === option.value);
-    }).length;
+    const n = found.filter((b) => inChoice(option.value, b)).length;
     option.textContent = `${t(`filter_${option.value}`)} (${n})`;
   }
   const wider = data.all.filter((b) => settingOf(b).scope !== 'exact').length;
@@ -242,7 +265,7 @@ function paint(openIds = new Set(view.open)) {
 }
 
 async function render() {
-  [data, scopes] = await Promise.all([loadBookmarks(), getAllScopes(), loadPageTitle()]);
+  [data, scopes] = await Promise.all([loadBookmarks(), getAllScopes(), loadPageTitle(), loadOnOff()]);
   paint();
 }
 
@@ -266,6 +289,17 @@ async function showPageTitle() {
 $('append-page-title').addEventListener('change', (e) => setAppendPageTitle(e.target.checked));
 onPageTitleChanged(showPageTitle);
 showPageTitle();
+
+// Bookmark names in tabs: one switch for every bookmark, and one at the start of each row.
+async function showOnOffAll() {
+  await loadOnOff();
+  $('on-all').checked = onOff.all;
+  for (const row of document.querySelectorAll('li[data-key]')) showOn(row);
+  showCounts();
+}
+$('on-all').addEventListener('change', (e) => setOnForAll(e.target.checked));
+onOnOffChanged(showOnOffAll);
+showOnOffAll();
 
 $('search').addEventListener('input', () => paint());
 $('filter').addEventListener('change', () => paint());
@@ -321,6 +355,7 @@ $('import-file').addEventListener('change', async () => {
   }
   const { total, matching, other, skipped } = summarize(parsed, data.all);
   const lines = [t('importSummary', String(total), String(matching), String(other))];
+  if (parsed.onForAll !== undefined) lines.push(t('importSummaryOn', t(parsed.onForAll ? 'stateOn' : 'stateOff')));
   if (parsed.pageTitleForAll !== undefined) lines.push(t('importSummaryAll', t(parsed.pageTitleForAll ? 'stateOn' : 'stateOff')));
   if (skipped) lines.push(t('importSkipped', String(skipped)));
   pendingImport = parsed;

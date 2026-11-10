@@ -280,3 +280,17 @@ test('recordVisit keeps the last visits of one host, most recent last', () => {
   for (let i = 0; i < 30; i++) trail = recordVisit(trail, 'e.com', `https://e.com/${i}`);
   assert.equal(trail.urls.length, TRAIL_LIMIT);
 });
+
+test('a bookmark turned off names no page, and another bookmark of the host may name it instead', () => {
+  const s = scopes({ 'e.com': { scope: 'host' }, 'mail.google.com/mail/u/1': { scope: 'contains', text: '/u/1/' } });
+  const off = new Set(['e.com/a']);
+  const page = resolve(scoped, s, { url: A, trail: [E], off });
+  assert.equal(page.bookmark.title, 'E');
+  assert.equal(page.own.bookmark.title, 'A');
+  const none = resolve(scoped, s, { url: A, off: new Set(['e.com/a']) });
+  assert.deepEqual([none.bookmark, none.own.bookmark.title, none.own.scope], [null, 'A', 'exact']);
+  // Off for the whole-host and contains bookmarks themselves.
+  assert.equal(resolve(scoped, s, { url: 'https://e.com/b', trail: [E], off: new Set(['e.com']) }).bookmark, null);
+  assert.equal(resolve(scoped, s, { url: 'https://mail.google.com/mail/u/1/x', off: new Set(['mail.google.com/mail/u/1']) }).bookmark, null);
+  assert.equal(resolve(scoped, s, { url: A }).own, undefined);
+});

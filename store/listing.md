@@ -31,6 +31,7 @@ Choose how far a name reaches
 • Only this address (default), this address and below, or the whole site: the tab keeps the bookmark's name while you browse on from the bookmarked page. A page with a bookmark of its own shows that name. Leaving the site ends it.
 • Pages whose address contains a text, in any tab: made for several accounts, e.g. /u/1/ or authuser=1 for a second Google account, a Play Console developer id or a Google Cloud project.
 • Optionally add the page's own title after the name, e.g. “Mail — (3) Inbox”, so you still see unread counts. Off by default; switch it on or off for all bookmarks or for single ones.
+• Turn it off for all bookmarks or for single ones, without removing the extension.
 • Export your settings to a file and import them in another browser: they apply to every bookmark with the same address.
 • One setting, three places: the extension's popup (with the bookmark name of the page you are on, editable), the settings page with all your bookmarks (by folder or as one list, filtered by scope), and the right-click menu.
 

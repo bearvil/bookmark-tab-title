@@ -3,22 +3,22 @@
     "message": "Bookmark-Tab Title"
   },
   "extDescription": {
-    "message": "Kad je otvorena stranica spremljena kao bookmark, naslov taba postaje naziv bookmarka."
+    "message": "Kad otvoriš stranicu koju imaš u bookmarkima, njezin tab dobiva naziv tog bookmarka."
   },
   "popupAllBookmarks": {
-    "message": "Svi bookmarki"
+    "message": "Postavke i svi bookmarki"
   },
   "popupUnsupportedTitle": {
     "message": "Ovdje ne radi"
   },
   "popupUnsupportedBody": {
-    "message": "Preglednici ne dopuštaju proširenjima mijenjati ovu stranicu."
+    "message": "Preglednik ne dopušta proširenjima da mijenjaju ovu stranicu."
   },
   "popupNoBookmarkTitle": {
     "message": "Ova stranica nije bookmark"
   },
   "popupNoBookmarkBody": {
-    "message": "Spremi je kao bookmark i tab će nositi naziv koji joj daš."
+    "message": "Spremi je kao bookmark i tab će dobiti naziv koji mu daš."
   },
   "popupAddBookmark": {
     "message": "Spremi stranicu kao bookmark"
@@ -30,19 +30,19 @@
     "message": "Spremljeno"
   },
   "openedFrom": {
-    "message": "Prikazano jer je ovaj tab došao kroz ovaj bookmark."
+    "message": "Prikazano jer je ovaj tab ranije otvorio adresu ovog bookmarka."
   },
   "optionsHeading": {
     "message": "Nazivi koji ostaju"
   },
   "optionsIntro": {
-    "message": "Odaberi dokle seže naziv svakog bookmarka: samo njegova adresa, stranice ispod nje, stranice čija adresa sadrži tekst ili cijeli host."
+    "message": "Za svaki bookmark odaberi gdje se koristi njegov naziv: samo na njegovoj adresi, i na stranicama ispod nje, na stranicama čija adresa sadrži neki tekst ili na cijelom hostu."
   },
   "optionsSearch": {
     "message": "Pretraži bookmarke"
   },
   "optionsCount": {
-    "message": "$ON$ od $TOTAL$ bookmarka zadržava naziv i izvan svoje adrese",
+    "message": "Bookmarki koji vrijede i izvan svoje adrese: $ON$ od $TOTAL$",
     "placeholders": {
       "on": {
         "content": "$1"
@@ -53,10 +53,10 @@
     }
   },
   "optionsNoMatchTitle": {
-    "message": "Ništa ne odgovara"
+    "message": "Nema rezultata"
   },
   "optionsNoMatchBody": {
-    "message": "Pokušaj s drugim nazivom, adresom ili mapom."
+    "message": "Pokušaj s drugim nazivom, adresom ili folderom."
   },
   "optionsNoBookmarksTitle": {
     "message": "Još nema bookmarka"
@@ -68,13 +68,13 @@
     "message": "Kako radi"
   },
   "menuScope_exact": {
-    "message": "Naziv samo na ovoj adresi"
+    "message": "Koristi naziv samo na ovoj adresi"
   },
   "menuScope_below": {
-    "message": "Naziv na ovoj adresi i stranicama ispod nje"
+    "message": "Koristi naziv na ovoj adresi i stranicama ispod nje"
   },
   "menuScope_contains": {
-    "message": "Naziv na stranicama čija adresa sadrži „$TEXT$”",
+    "message": "Koristi naziv na stranicama čija adresa sadrži „$TEXT$”",
     "placeholders": {
       "text": {
         "content": "$1"
@@ -82,10 +82,10 @@
     }
   },
   "menuScope_containsEmpty": {
-    "message": "Naziv na stranicama čija adresa sadrži…"
+    "message": "Koristi naziv na stranicama čija adresa sadrži…"
   },
   "menuScope_host": {
-    "message": "Naziv na cijelom $HOST$",
+    "message": "Koristi naziv na cijelom hostu ($HOST$)",
     "placeholders": {
       "host": {
         "content": "$1"
@@ -93,7 +93,7 @@
     }
   },
   "scopeLabel": {
-    "message": "Gdje tab zadržava ovaj naziv"
+    "message": "Gdje se koristi ovaj naziv"
   },
   "scope_exact": {
     "message": "Samo ova adresa"
@@ -111,7 +111,7 @@
     "message": "Dodaj i izvorni naslov stranice"
   },
   "appendTitleHint": {
-    "message": "Tab prikazuje „naziv bookmarka — naslov stranice”, npr. „Mail — (3) Inbox”. Za sve bookmarke, osim onih s vlastitim izborom („Naslov stranice” u retku ili u izborniku proširenja)."
+    "message": "Tab pokazuje „naziv bookmarka — naslov stranice”, npr. „Mail — (3) Inbox”. Vrijedi za sve bookmarke osim onih s vlastitom postavkom (prekidač „Naslov stranice” u retku ili u prozorčiću proširenja)."
   },
   "viewLabel": {
     "message": "Prikaz"
@@ -129,7 +129,7 @@
     "message": "Svi bookmarki"
   },
   "filter_wider": {
-    "message": "Sežu i izvan svoje adrese"
+    "message": "Vrijede i izvan svoje adrese"
   },
   "filter_exact": {
     "message": "Samo ova adresa"
@@ -153,13 +153,13 @@
     "message": "Redoslijed: naziv A–Ž"
   },
   "sort_host": {
-    "message": "Redoslijed: host"
+    "message": "Redoslijed: po hostu"
   },
   "sort_scope": {
-    "message": "Redoslijed: doseg, širi prvo"
+    "message": "Redoslijed: najširi doseg prvo"
   },
   "folderWider": {
-    "message": "izvan adrese: $COUNT$",
+    "message": "širi doseg: $COUNT$",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -170,13 +170,13 @@
     "message": "Naslov stranice"
   },
   "pageTitleHint": {
-    "message": "Dodaj izvorni naslov stranice iza naziva, za ovaj bookmark. Nadjačava postavku za sve bookmarke."
+    "message": "Prikaži izvorni naslov stranice iza naziva ovog bookmarka. Nadjačava postavku za sve bookmarke."
   },
   "backupTitle": {
     "message": "Datoteka s postavkama"
   },
   "backupHint": {
-    "message": "Spremi doseg naziva i izbore naslova stranice u datoteku ili ih učitaj iz nje, npr. u drugom pregledniku. Vrijede za svaki bookmark s istom adresom."
+    "message": "Spremi sve ove postavke u datoteku ili ih učitaj iz nje, npr. u drugom pregledniku. Postavke vrijede za svaki bookmark s istom adresom."
   },
   "exportButton": {
     "message": "Izvezi"
@@ -191,7 +191,7 @@
     "message": "Odustani"
   },
   "importSummary": {
-    "message": "U datoteci je postavki: $TOTAL$. Za tvoje bookmarke: $MATCH$, za adrese koje još nemaš: $OTHER$ (proradit će kad dodaš bookmark).",
+    "message": "Adresa u datoteci: $TOTAL$. Odgovara tvojim bookmarkima: $MATCH$. Za ostale ($OTHER$) postavke će vrijediti kad ih spremiš kao bookmark.",
     "placeholders": {
       "total": {
         "content": "$1"
@@ -213,13 +213,13 @@
     }
   },
   "stateOn": {
-    "message": "uključen"
+    "message": "uključeno"
   },
   "stateOff": {
-    "message": "isključen"
+    "message": "isključeno"
   },
   "importSkipped": {
-    "message": "Neispravnih unosa: $COUNT$, izostavljeni su.",
+    "message": "Preskočeni neispravni unosi: $COUNT$.",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -227,7 +227,7 @@
     }
   },
   "importDone": {
-    "message": "Uvezeno postavki: $COUNT$.",
+    "message": "Uvezeno adresa: $COUNT$.",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -235,7 +235,7 @@
     }
   },
   "exportDone": {
-    "message": "Izvezeno postavki: $COUNT$.",
+    "message": "Izvezeno adresa: $COUNT$.",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -243,22 +243,57 @@
     }
   },
   "importErrorFile": {
-    "message": "Ovo nije datoteka s postavkama Bookmark-Tab Titlea."
+    "message": "Ovo nije datoteka s postavkama za Bookmark-Tab Title."
   },
   "importErrorSize": {
     "message": "Datoteka je prevelika (više od 5 MB)."
   },
   "importErrorQuota": {
-    "message": "U sinkroniziranom spremištu preglednika nema mjesta za ove postavke. Ništa nije promijenjeno."
+    "message": "U sinkroniziranoj pohrani preglednika nema dovoljno mjesta za ove postavke. Ništa nije promijenjeno."
+  },
+  "onAllLabel": {
+    "message": "Nazivi bookmarka u tabovima (svi bookmarki)"
+  },
+  "bookmarkOnLabel": {
+    "message": "Koristi naziv ovog bookmarka u tabu"
+  },
+  "pausedNote": {
+    "message": "Isključeno za sve bookmarke."
+  },
+  "bookmarkOffNote": {
+    "message": "Isključeno za ovaj bookmark."
+  },
+  "badgeOff": {
+    "message": "OFF"
+  },
+  "actionTitleOff": {
+    "message": "Bookmark-Tab Title (isključeno)"
+  },
+  "onAllTitle": {
+    "message": "Nazivi bookmarka u tabovima"
+  },
+  "onAllHint": {
+    "message": "Kad je isključeno, svaki tab opet pokazuje naslov stranice. Pojedini bookmark isključuješ prekidačem na početku njegova retka ili u prozorčiću proširenja."
+  },
+  "filter_off": {
+    "message": "Isključeni"
+  },
+  "importSummaryOn": {
+    "message": "Nazivi bookmarka u tabovima: $STATE$.",
+    "placeholders": {
+      "state": {
+        "content": "$1"
+      }
+    }
   },
   "containsPlaceholder": {
     "message": "npr. /u/1/ ili authuser=1"
   },
   "containsHint": {
-    "message": "Vrijedi i za poveznice otvorene iz maila. Više mogućnosti odvoji razmakom."
+    "message": "Vrijedi i za poveznice otvorene iz e-pošte. Više tekstova odvoji razmakom."
   },
   "containsDetail": {
-    "message": "Na $HOST$, u svakom tabu",
+    "message": "Na hostu $HOST$, u svakom tabu",
     "placeholders": {
       "host": {
         "content": "$1"
@@ -277,31 +312,31 @@
     "message": "Sve ispod"
   },
   "howIntro": {
-    "message": "Stranica iz bookmarka u tabu pokazuje naziv bookmarka umjesto svog naslova. Za svaki bookmark biraš dokle naziv seže:"
+    "message": "Kad je stranica spremljena kao bookmark, njezin tab pokazuje naziv bookmarka umjesto naslova stranice. Za svaki bookmark biraš gdje se naziv koristi:"
   },
   "howDefault": {
     "message": "Zadano"
   },
   "howExact": {
-    "message": "Samo na samoj adresi bookmarka."
+    "message": "Samo na adresi bookmarka."
   },
   "howBelow": {
-    "message": "Kad je tab bio na adresi bookmarka, i na svakoj stranici ispod nje — npr. example.com/docs, zatim example.com/docs/guide."
+    "message": "Nakon što je tab otvorio adresu bookmarka, i na svakoj stranici ispod nje, npr. example.com/docs pa example.com/docs/guide."
   },
   "howContains": {
-    "message": "U svakom tabu, i za poveznice otvorene iz maila: svaka stranica hosta bookmarka čija adresa sadrži tekst. Za više računa — /u/1/ ili authuser=1 kod Googlea, ID developera u Play Consoleu, project=… u Cloudu. Više mogućnosti odvoji razmakom."
+    "message": "Na svakoj stranici hosta bookmarka čija adresa sadrži taj tekst, u bilo kojem tabu, i za poveznice otvorene iz e-pošte. Korisno kad imaš više računa: /u/1/ ili authuser=1 kod Googlea, ID developera u Play Consoleu, project=… u Google Cloudu. Više tekstova odvoji razmakom."
   },
   "howHost": {
-    "message": "Kad je tab bio na adresi bookmarka, na svakoj stranici hosta."
+    "message": "Nakon što je tab otvorio adresu bookmarka, na svakoj stranici hosta."
   },
   "howWinsTitle": {
     "message": "Kad odgovara više bookmarka"
   },
   "howWins": {
-    "message": "Pobjeđuje najspecifičniji: vlastiti bookmark stranice, zatim „adresa sadrži”, zatim „ova adresa i sve ispod”, zatim zadnji „cijeli host” bookmark kroz koji je tab prošao. Nakon stranice s vlastitim bookmarkom sljedeća se stranica vraća na taj naziv cijelog hosta."
+    "message": "Pobjeđuje najspecifičniji: prvo vlastiti bookmark stranice, zatim „Stranice čija adresa sadrži”, pa „Ova adresa i sve ispod” i na kraju posljednji bookmark s dosegom „Cijeli host” koji je tab otvorio. Nakon stranice koja ima vlastiti bookmark, sljedeća se stranica vraća na naziv cijelog hosta."
   },
   "howTrail": {
-    "message": "Odlaskom s hosta prestaju „ova adresa i sve ispod” i „cijeli host”; poveznica otvorena u novom tabu ih zadržava. Izbor je isti ovdje, u izborniku proširenja i kad desnom tipkom klikneš na stranicu."
+    "message": "„Ova adresa i sve ispod” i „Cijeli host” prestaju vrijediti kad tab napusti host; poveznica otvorena u novom tabu ih zadržava. Postavka je zajednička: mijenjaš je ovdje, u prozorčiću proširenja ili desnim klikom na stranicu."
   },
   "privacyPolicy": {
     "message": "Pravila privatnosti"

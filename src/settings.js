@@ -92,6 +92,36 @@ export function onPageTitleChanged(callback) {
   });
 }
 
+// Bookmark names in tabs, on or off: for every bookmark (on by default) and per bookmark. Stored only while off:
+// DISABLED_KEY for every bookmark, OFF_PREFIX + normalized URL for one bookmark.
+export const DISABLED_KEY = 'disabled';
+export const OFF_PREFIX = 'off:';
+
+// { all: on for every bookmark, off: Set of normalized URLs of the bookmarks turned off }
+export async function getOnOff() {
+  const all = await chrome.storage.sync.get(null);
+  const off = new Set(Object.keys(all).filter((k) => k.startsWith(OFF_PREFIX) && all[k] === true).map((k) => k.slice(OFF_PREFIX.length)));
+  return { all: all[DISABLED_KEY] !== true, off };
+}
+
+export async function setOnForAll(on) {
+  if (on) await chrome.storage.sync.remove(DISABLED_KEY);
+  else await chrome.storage.sync.set({ [DISABLED_KEY]: true });
+}
+
+export async function setBookmarkOn(url, on) {
+  const key = normalizeUrl(url);
+  if (!key) return;
+  if (on) await chrome.storage.sync.remove(OFF_PREFIX + key);
+  else await chrome.storage.sync.set({ [OFF_PREFIX + key]: true });
+}
+
+export function onOnOffChanged(callback) {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'sync' && Object.keys(changes).some((k) => k === DISABLED_KEY || k.startsWith(OFF_PREFIX))) callback();
+  });
+}
+
 // "Keep on whole host" switched on → the "whole host" scope, unless the bookmark already has a newer setting.
 // Runs on install, update and browser start (an older version on another device may still sync old keys).
 export async function migrateSettings() {

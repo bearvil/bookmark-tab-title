@@ -22,6 +22,13 @@
       </header>
 
       <section class="surface">
+        <label class="row" for="on-all">
+          <span class="row__main">
+            <span class="text-body text-strong" data-i18n="onAllTitle"></span>
+            <span class="text-caption tone-secondary" data-i18n="onAllHint"></span>
+          </span>
+          <input id="on-all" class="switch" type="checkbox" role="switch" />
+        </label>
         <label class="row" for="append-page-title">
           <span class="row__main">
             <span class="text-body text-strong" data-i18n="appendTitleLabel"></span>
@@ -139,6 +146,7 @@
 
     <template id="row">
       <li class="row row--wrap">
+        <input class="switch switch--small" type="checkbox" role="switch" data-field="on" />
         <label class="row__main">
           <span class="text-body text-strong truncate" data-field="title"></span>
           <span class="text-caption tone-secondary truncate" data-field="where"></span>

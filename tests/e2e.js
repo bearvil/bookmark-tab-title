@@ -32,6 +32,7 @@ const routes = {
   // An app that puts back a title it read from the tab earlier.
   '/restore': page('Restore', `<script>setTimeout(() => { const t = document.title; document.title = 'Other'; setTimeout(() => { document.title = t; }, 300); }, 800);</script>`),
   '/upd': page('Admin page'),
+  '/onoff': page('On off'),
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
 
@@ -589,6 +590,28 @@ await check('settings file: a bookmark exported with "only this address" gets it
   await options.close();
   if (scope !== 'exact' || Object.keys(stored).length) throw new Error(JSON.stringify({ scope, stored }));
 });
+await check('settings file: turned off, for all bookmarks and for one, goes into the file and comes back', async () => {
+  const off = `off:${base.slice(7)}/work/a`;
+  await sw.evaluate((k) => chrome.storage.sync.set({ disabled: true, [k]: true }), off);
+  const options = await optionsPage();
+  const [download] = await Promise.all([options.waitForEvent('download'), options.click('#export')]);
+  const file = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+  await sw.evaluate((k) => chrome.storage.sync.remove(['disabled', k]), off);
+  await options.waitForTimeout(200);
+  const before = await options.isChecked('#on-all');
+  await options.setInputFiles('#import-file', await download.path());
+  const summary = await options.textContent('#import-summary');
+  await options.click('#import-apply');
+  await options.waitForSelector('#backup-status-row:not([hidden])');
+  await options.waitForTimeout(200);
+  const after = await options.isChecked('#on-all');
+  const restored = await sw.evaluate((k) => chrome.storage.sync.get(['disabled', k]), off);
+  await sw.evaluate((k) => chrome.storage.sync.remove(['disabled', k]), off);
+  await options.close();
+  const entry = file.bookmarks.find((e) => e.address === off.slice(4));
+  const ok = file.onForAll === false && entry?.on === false && before && !after && restored.disabled === true && restored[off] === true && summary.includes('off');
+  if (!ok) throw new Error(JSON.stringify({ onForAll: file.onForAll, entry, before, after, restored, summary }));
+});
 await check('settings file: another file is refused and nothing changes', async () => {
   const before = await sw.evaluate(() => chrome.storage.sync.get(null));
   const options = await optionsPage();
@@ -710,6 +733,67 @@ await check('page title that has the bookmark name in it shows the name once', a
   await sw.evaluate((k) => chrome.storage.sync.remove(k), [`title:${base.slice(7)}/named`, `title:${base.slice(7)}/restore`]);
   await nm.close();
   await rs.close();
+});
+await check('turned off for all bookmarks: tabs show the page titles, the button says OFF, the popup still works', async () => {
+  const mail = await context.newPage();
+  await mail.goto(`${base}/onoff`);
+  await bookmark.create('On off named', `${base}/onoff`);
+  await expectTitle(mail, 'On off named');
+  const options = await optionsPage();
+  await options.click('#on-all');
+  await options.waitForTimeout(200);
+  await options.close();
+  await expectTitle(mail, 'On off');
+  const badge = await sw.evaluate(() => chrome.action.getBadgeText({}));
+  const popup = await popupFor(`${base}/onoff`);
+  const shown = [await popup.inputValue('#name'), await popup.isChecked('#on-all'), await popup.textContent('#shown-because')];
+  await popup.click('#on-all');
+  await popup.waitForTimeout(200);
+  await popup.close();
+  await expectTitle(mail, 'On off named');
+  const after = await sw.evaluate(() => chrome.action.getBadgeText({}));
+  await mail.close();
+  if (badge !== 'OFF' || after !== '' || shown[0] !== 'On off named' || shown[1] || !shown[2]) throw new Error(JSON.stringify({ badge, after, shown }));
+});
+await check('turned off for one bookmark (popup): the page title, and the popup keeps that bookmark to turn it on', async () => {
+  const p = await context.newPage();
+  await p.goto(`${base}/onoff`);
+  await expectTitle(p, 'On off named');
+  const popup = await popupFor(`${base}/onoff`);
+  await popup.click('#bookmark-on');
+  await popup.waitForTimeout(200);
+  await popup.close();
+  await expectTitle(p, 'On off');
+  const again = await popupFor(`${base}/onoff`);
+  const state = [await again.inputValue('#name'), await again.isChecked('#bookmark-on'), await again.isVisible('#shown-because')];
+  await again.click('#bookmark-on');
+  await again.waitForTimeout(200);
+  await again.close();
+  await expectTitle(p, 'On off named');
+  await p.close();
+  if (state[0] !== 'On off named' || state[1] || !state[2]) throw new Error(JSON.stringify(state));
+});
+await check('turned off for one bookmark (settings row): shown under "Turned off", and its scope reaches no page', async () => {
+  const [options, row] = await optionsRow('E');
+  await row.locator('select').selectOption('host');
+  await row.locator('[data-field="on"]').click();
+  await options.waitForTimeout(200);
+  await options.selectOption('#filter', 'off');
+  await options.waitForTimeout(200);
+  const titles = await options.locator('#list li[data-key] [data-field="title"]').allTextContents();
+  await options.close();
+  await scoped.goto(E);
+  await scoped.waitForTimeout(400);
+  await expectTitle(scoped, 'Page /s/');
+  await scoped.goto(`${L}/s/b`);
+  await scoped.waitForTimeout(400);
+  await expectTitle(scoped, 'Page /s/b');
+  const [o2, r2] = await optionsRow('E');
+  await r2.locator('[data-field="on"]').click();
+  await r2.locator('select').selectOption('exact');
+  await o2.waitForTimeout(200);
+  await o2.close();
+  if (titles.join() !== 'E') throw new Error(JSON.stringify(titles));
 });
 await check('context menu has one item per scope (clicking native menus is not scriptable)', async () => {
   // update() rejects for an unknown menu id.
