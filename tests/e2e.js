@@ -31,6 +31,7 @@ const routes = {
   '/named': page('Nm Admin - Nm'),
   // An app that puts back a title it read from the tab earlier.
   '/restore': page('Restore', `<script>setTimeout(() => { const t = document.title; document.title = 'Other'; setTimeout(() => { document.title = t; }, 300); }, 800);</script>`),
+  '/upd': page('Admin page'),
   '/dyn': page('Dyn', `<script>let i = 0; setInterval(() => { document.title = '(' + ++i + ') Inbox'; }, 50);</script>`),
 };
 
@@ -720,6 +721,37 @@ await check('another tab without a bookmark is not affected', async () => {
   await other.waitForTimeout(500);
   await expectTitle(other, 'Attacker');
   await other.close();
+});
+// After an extension update the old copy of the script stays in the tab, cut off from the extension, next to the
+// new copy. Playwright cannot bring a reloaded extension back, so both copies of the real script run here with a
+// stand-in for chrome.runtime each, on a page without a bookmark (the extension itself leaves it alone).
+await check('after an extension update the old copy of the script does not take the page title away', async () => {
+  const source = fs.readFileSync(path.join(EXT_DIR, 'src/content.js'), 'utf8');
+  const up = await context.newPage();
+  await up.goto(`${base}/upd`);
+  await up.evaluate((src) => {
+    const copy = (reply) => {
+      const chrome = { runtime: { id: 'ext', sendMessage: async () => reply, onMessage: { addListener: (fn) => (chrome.listener = fn) } } };
+      new Function('chrome', src)(chrome);
+      return chrome;
+    };
+    window.oldCopy = copy({ title: 'Up', append: false });
+    window.copy = copy;
+  }, source);
+  await expectTitle(up, 'Up');
+  await up.evaluate(() => {
+    window.oldCopy.runtime.id = undefined;
+    window.newCopy = window.copy({ title: 'Up', append: false });
+  });
+  await up.waitForTimeout(100);
+  await up.evaluate(() => window.newCopy.listener({ type: 'set-title', title: 'Up', append: true }));
+  await expectTitle(up, 'Up — Admin page');
+  // Another change in <head>, then the bookmark is gone: the page gets its own title back.
+  await up.evaluate(() => document.head.append(Object.assign(document.createElement('meta'), { name: 'x' })));
+  await up.waitForTimeout(200);
+  await up.evaluate(() => window.newCopy.listener({ type: 'set-title', title: null }));
+  await expectTitle(up, 'Admin page');
+  await up.close();
 });
 
 await context.close();

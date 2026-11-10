@@ -52,8 +52,11 @@
   function restore() {
     observer?.disconnect();
     observer = null;
-    if (applied !== null && document.title === applied) document.title = pageTitle();
-    delete root.dataset[ORIGINAL];
+    const shown = applied !== null && document.title === applied;
+    if (shown) document.title = pageTitle();
+    // An old copy left behind by an extension update that no longer shows the title must not take the page's own
+    // title away from the new copy.
+    if (shown || chrome.runtime?.id) delete root.dataset[ORIGINAL];
     applied = null;
   }
 
