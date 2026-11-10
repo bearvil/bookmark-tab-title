@@ -81,6 +81,7 @@ body {
   outline: none;
 }
 .field::placeholder { color: var(--text-tertiary); font-weight: 600; }
+.field--dense { min-height: 40px; padding-block: var(--space-sm); }
 .field--compact { min-height: 40px; padding: var(--space-sm) var(--space-md); font-size: var(--text-caption); }
 .field:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .field-label { display: flex; justify-content: space-between; align-items: center; gap: var(--space-sm); }

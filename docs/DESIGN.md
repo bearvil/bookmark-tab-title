@@ -32,6 +32,7 @@ The popup and the settings page share one small design system. Pages only compos
 | `.switch` | — | `<input type="checkbox" role="switch">` |
 | `.switch--small`, `.inline-switch` | — | Small switch with a short label beside it, inline in a row or a label line ("Page title") |
 | `.field-wrap`, `.field-wrap__note` | — | A field with a status note ("Saved") inside it on the right |
+| `.field--dense` | — | A body-size field with less height (the popup's name field) |
 | `.segmented` | — | Two or three radio options in one pill, the chosen one filled with the accent (Folders / List) |
 | `.folder`, `.folder__head`, `.folder__list` | — | Collapsible folder (`<details>`): a `.row` summary with a chevron, name, pill and count; nested folders indent |
 | `.radio`, `.choices`, `.choice` | — | A surface of `.row` labels with a radio each; the selected row is tinted; `.choices--dense` for less height (the popup, which Chrome cuts at 600 px) |
