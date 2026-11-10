@@ -113,12 +113,7 @@
     "message": "e.g. /u/1/ or authuser=1"
   },
   "containsHint": {
-    "message": "Works in every tab on $HOST$, also for links opened from mail. Separate alternatives with a space.",
-    "placeholders": {
-      "host": {
-        "content": "$1"
-      }
-    }
+    "message": "Also for links opened from mail. Separate alternatives with a space."
   },
   "containsDetail": {
     "message": "On $HOST$, in every tab",

@@ -111,12 +111,7 @@
     "message": "npr. /u/1/ ili authuser=1"
   },
   "containsHint": {
-    "message": "Vrijedi u svakom tabu na $HOST$, i za poveznice otvorene iz maila. Više mogućnosti odvoji razmakom.",
-    "placeholders": {
-      "host": {
-        "content": "$1"
-      }
-    }
+    "message": "Vrijedi i za poveznice otvorene iz maila. Više mogućnosti odvoji razmakom."
   },
   "containsDetail": {
     "message": "Na $HOST$, u svakom tabu",

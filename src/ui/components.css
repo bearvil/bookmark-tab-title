@@ -147,6 +147,8 @@ body {
 /* Choice list: a surface of .row labels, each with a .radio; the selected row is tinted */
 .choices { margin: 0; padding: 0; min-width: 0; }
 .choice { cursor: pointer; }
+/* Denser rows where height is scarce (the popup: Chrome cuts it at 600 px) */
+.choices--dense > .row { padding-block: var(--space-sm); min-height: 48px; }
 .choice:has(.radio:checked) { background: var(--accent-soft); }
 .choices > .choice:first-child { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 .choices > .choice:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }

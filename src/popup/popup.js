@@ -42,6 +42,7 @@ function paint() {
   const because = { below: t('openedFrom'), host: t('openedFrom'), contains: t('shownContains', state.text) }[state.via];
   $('shown-because').hidden = !because;
   $('shown-because').textContent = because ?? '';
+  $('shown-because').title = because ?? '';
 
   const address = normalizeUrl(bookmark.url);
   for (const radio of document.querySelectorAll('[name="scope"]')) radio.checked = radio.value === state.scope;
@@ -51,7 +52,6 @@ function paint() {
   document.querySelector('[data-detail="host"]').textContent = host;
   $('contains-row').hidden = state.scope !== 'contains';
   if (document.activeElement !== $('contains-text')) $('contains-text').value = state.text ?? '';
-  $('contains-hint').textContent = t('containsHint', host);
 }
 
 function flashSaved() {

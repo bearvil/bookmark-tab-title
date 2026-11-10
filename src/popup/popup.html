@@ -31,12 +31,12 @@
             <span id="saved" class="text-micro toast" data-visible="false" data-i18n="saved"></span>
           </label>
           <input id="name" class="field" type="text" autocomplete="off" spellcheck="false" />
-          <p id="shown-because" class="text-caption tone-secondary" hidden></p>
+          <p id="shown-because" class="text-caption tone-secondary truncate" hidden></p>
         </div>
       </section>
       <div class="group">
         <p id="scope-label" class="text-caption tone-secondary group__label" data-i18n="scopeLabel"></p>
-        <div id="scope" class="surface choices" role="radiogroup" aria-labelledby="scope-label">
+        <div id="scope" class="surface choices choices--dense" role="radiogroup" aria-labelledby="scope-label">
           <label class="row choice">
             <input class="radio" type="radio" name="scope" value="exact" />
             <span class="row__main">
@@ -63,7 +63,7 @@
           </label>
           <div id="contains-row" class="row row--stack" hidden>
             <input id="contains-text" class="field field--compact" type="text" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:containsPlaceholder,aria-label:scope_contains" />
-            <p id="contains-hint" class="text-caption tone-secondary"></p>
+            <p id="contains-hint" class="text-caption tone-secondary" data-i18n="containsHint"></p>
           </div>
           <label class="row choice">
             <input class="radio" type="radio" name="scope" value="host" />
