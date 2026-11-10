@@ -223,6 +223,10 @@ const optionsPage = async () => {
 const L = `http://localhost:${server.address().port}`;
 const E = `${L}/s/`;
 const A = `${L}/s/a`;
+// The same pages on another port: another app on the same host name.
+const server2 = http.createServer(server.listeners('request')[0]);
+await new Promise((r) => server2.listen(0, r));
+const L2 = `http://localhost:${server2.address().port}`;
 const scoped = await context.newPage();
 const scopeIn = (popup) => popup.$eval('[name="scope"]:checked', (r) => r.value);
 
@@ -330,6 +334,21 @@ await check('popup: address contains (Google account) → the name in any tab, s
   await expectTitle(fresh, 'Page /s/mail/u/0/');
   await fresh.close();
 });
+await check('another port is another app: no whole-host or contains name there', async () => {
+  const tab = await context.newPage();
+  await tab.goto(E);
+  await expectTitle(tab, 'E');
+  await tab.goto(`${L2}/s/b`);
+  await tab.waitForTimeout(400);
+  await expectTitle(tab, 'Page /s/b');
+  await tab.goto(`${L}/s/b`);
+  await tab.waitForTimeout(400);
+  await expectTitle(tab, 'Page /s/b');
+  await tab.goto(`${L2}/s/mail/u/1/thread`);
+  await tab.waitForTimeout(400);
+  await expectTitle(tab, 'Page /s/mail/u/1/thread');
+  await tab.close();
+});
 await check('popup: typing another text changes where the name shows', async () => {
   const popup = await popupFor(`${L}/s/mail/u/1/`);
   await popup.fill('#contains-text', 'team=7 /u/2/');
@@ -405,6 +424,7 @@ await check('another tab without a bookmark is not affected', async () => {
 
 await context.close();
 server.close();
+server2.close();
 fs.rmSync(userDataDir, { recursive: true, force: true });
 
 for (const [ok, name] of results) console.log(`${ok ? '✔' : '✘'} ${name}`);

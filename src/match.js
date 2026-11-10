@@ -42,10 +42,11 @@ export function originOf(raw) {
   }
 }
 
-// Host without "www.", the unit for "keep the bookmark name on the whole host".
+// Host without "www.", with the port when it is not the default one (localhost:3000 and localhost:8040 are different
+// apps): the unit of the "below", "contains" and "whole host" scopes and of the tab's trail.
 export function hostOf(raw) {
   try {
-    return new URL(raw).hostname.toLowerCase().replace(/^www\./, '');
+    return new URL(raw).host.toLowerCase().replace(/^www\./, '');
   } catch {
     return null;
   }

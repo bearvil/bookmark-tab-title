@@ -105,6 +105,14 @@ test('hostOf drops www. and keeps subdomains apart', () => {
   assert.equal(hostOf('nope'), null);
 });
 
+test('hostOf keeps a port that is not the default one', () => {
+  assert.equal(hostOf('http://localhost:8040/a'), 'localhost:8040');
+  assert.notEqual(hostOf('http://localhost:8040/'), hostOf('http://localhost:3000/'));
+  assert.equal(hostOf('https://www.e.com:8443/'), 'e.com:8443');
+  assert.equal(hostOf('https://e.com:443/'), 'e.com');
+  assert.equal(hostOf('http://e.com:80/'), 'e.com');
+});
+
 // --- Scopes: the scenarios from the use-case analysis (e.com is "E", e.com/a is "A").
 
 const E = 'https://e.com/';
@@ -140,6 +148,7 @@ test('covers: the address and the pages under it, same host only', () => {
   assert.ok(!covers('https://e.com/docs/', 'https://e.com/docsx'));
   assert.ok(!covers('https://e.com/docs/', 'https://other.com/docs/a'));
   assert.ok(covers('https://e.com/', 'https://e.com/anything'));
+  assert.ok(!covers('http://localhost:8040/docs/', 'http://localhost:3000/docs/a'));
 });
 
 test('containsMatch: anywhere after the host, any of the texts, ignoring case', () => {
@@ -203,6 +212,23 @@ test('only below and whole-host bookmarks enter the trail, so many other bookmar
   for (const url of [E, ...many.map((b) => b.url)]) trail = nextTrail(trail, 'e.com', resolve(idx, s, { url, trail: trail?.urls }));
   assert.deepEqual(trail.urls, [E]);
   assert.equal(resolve(idx, s, { url: 'https://e.com/other', trail: trail.urls }).bookmark.title, 'E');
+});
+
+test('another port is another host: no whole-host, below or contains name there', () => {
+  const app = 'http://localhost:8040/';
+  const mail = 'http://localhost:8040/mail/u/1/';
+  const idx = buildIndex([{ children: [{ title: 'App', url: app }, { title: 'Mail', url: mail }] }]);
+  const s = scopes({ 'localhost:8040': { scope: 'host' }, 'localhost:8040/mail/u/1': { scope: 'contains', text: '/u/1/' } });
+  let trail = null;
+  const titles = [app, 'http://localhost:8040/x', 'http://localhost:3000/x', 'http://localhost:8040/x'].map((url) => {
+    const host = hostOf(url);
+    const found = resolve(idx, s, { url, trail: trail?.host === host ? trail.urls : [] });
+    trail = nextTrail(trail, host, found);
+    return found.bookmark?.title ?? null;
+  });
+  assert.deepEqual(titles, ['App', 'App', null, null]);
+  assert.equal(resolve(idx, s, { url: 'http://localhost:8040/mail/u/1/x' }).bookmark?.title, 'Mail');
+  assert.equal(resolve(idx, s, { url: 'http://localhost:3000/mail/u/1/x' }).bookmark, null);
 });
 
 test('leaving the host ends the trail', () => {
