@@ -14,10 +14,11 @@ const stored = {
 const bookmarks = [
   { title: 'Mail – school', url: 'https://mail.google.com/mail/u/1/#inbox' },
   { title: 'Docs', url: 'https://www.e.com/docs/' },
+  { title: 'Plain', url: 'https://plain.com/' },
 ];
 const now = new Date('2026-11-10T12:00:00Z');
 
-test('export: one entry per address with its scope, text, page title choice and name', () => {
+test('export: every bookmark (also with the default) and every stored setting, one entry per address', () => {
   const file = buildExport(stored, bookmarks, now);
   assert.equal(file.app, 'bookmark-tab-title');
   assert.equal(file.format, 1);
@@ -27,6 +28,7 @@ test('export: one entry per address with its scope, text, page title choice and 
     { address: 'e.com/docs', name: 'Docs', scope: 'below' },
     { address: 'e.com/only-title', scope: 'exact', pageTitle: false },
     { address: 'mail.google.com/mail/u/1', name: 'Mail – school', scope: 'contains', text: '/u/1/', pageTitle: true },
+    { address: 'plain.com', name: 'Plain', scope: 'exact' },
   ]);
   assert.equal(exportFileName(now), 'bookmark-tab-title-settings-2026-11-10.json');
 });
@@ -97,4 +99,10 @@ test('plan: the file decides for its addresses, defaults are removed, a choice e
 test('summary: entries for bookmarks there are now, and for addresses without one', () => {
   const parsed = { entries: [{ key: 'mail.google.com/mail/u/1' }, { key: 'e.com/docs' }, { key: 'new.com' }], skipped: 2 };
   assert.deepEqual(summarize(parsed, bookmarks), { total: 3, matching: 2, other: 1, skipped: 2 });
+});
+
+test('a bookmark exported with the default gets the default back on import', () => {
+  const file = buildExport({}, [{ title: 'e4', url: 'http://localhost:8440/' }], now);
+  const plan = planImport(parseBackup(JSON.stringify(file)), false);
+  assert.deepEqual(plan, { set: {}, remove: ['appendPageTitle', 'scope:localhost:8440', 'title:localhost:8440'] });
 });

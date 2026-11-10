@@ -568,6 +568,22 @@ await check('settings file: export, then import applies the settings to every bo
     restored[`title:${workB}`] === true;
   if (!ok) throw new Error(JSON.stringify({ name, exported, summary, status, scope, restored }));
 });
+await check('settings file: a bookmark exported with "only this address" gets it back on import', async () => {
+  const key = `${base.slice(7)}/work/b`;
+  const options = await optionsPage();
+  const [download] = await Promise.all([options.waitForEvent('download'), options.click('#export')]);
+  const row = options.locator('#list li', { has: options.locator('[data-field="title"]', { hasText: /^Work b$/ }) });
+  await row.locator('select').selectOption('host');
+  await options.waitForTimeout(200);
+  await options.setInputFiles('#import-file', await download.path());
+  await options.click('#import-apply');
+  await options.waitForSelector('#backup-status-row:not([hidden])');
+  await options.waitForTimeout(200);
+  const scope = await row.locator('select').inputValue();
+  const stored = await sw.evaluate((k) => chrome.storage.sync.get(k), `scope:${key}`);
+  await options.close();
+  if (scope !== 'exact' || Object.keys(stored).length) throw new Error(JSON.stringify({ scope, stored }));
+});
 await check('settings file: another file is refused and nothing changes', async () => {
   const before = await sw.evaluate(() => chrome.storage.sync.get(null));
   const options = await optionsPage();

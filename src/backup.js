@@ -6,9 +6,11 @@ import { APPEND_KEY, cleanScope, SCOPE_PREFIX, TITLE_PREFIX } from './settings.j
 
 export const APP = 'bookmark-tab-title';
 export const FORMAT = 1;
-export const MAX_FILE_BYTES = 1024 * 1024;
+export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
-// The file for the stored settings (all of storage.sync) and the bookmarks (for their names, for reading only).
+// The file for the stored settings (all of storage.sync) and the web bookmarks. Every bookmark is in it, also with
+// the default "only this address", so an import also brings those back; settings of addresses without a bookmark
+// are kept too.
 export function buildExport(stored, bookmarks, now = new Date()) {
   const names = new Map();
   for (const b of bookmarks) {
@@ -17,13 +19,14 @@ export function buildExport(stored, bookmarks, now = new Date()) {
   }
   const entries = new Map();
   const entry = (key) => entries.get(key) ?? entries.set(key, { address: key, scope: 'exact' }).get(key);
+  for (const key of names.keys()) entry(key);
   for (const [k, v] of Object.entries(stored)) {
     if (k.startsWith(SCOPE_PREFIX)) Object.assign(entry(k.slice(SCOPE_PREFIX.length)), cleanScope(v));
     if (k.startsWith(TITLE_PREFIX) && typeof v === 'boolean') entry(k.slice(TITLE_PREFIX.length)).pageTitle = v;
   }
-  // An unknown stored value reads as the default, which needs no entry.
+  // An unknown stored value of an address without a bookmark reads as the default, which needs no entry.
   const list = [...entries.values()]
-    .filter((e) => e.scope !== 'exact' || e.pageTitle !== undefined)
+    .filter((e) => names.has(e.address) || e.scope !== 'exact' || e.pageTitle !== undefined)
     .map((e) => (names.has(e.address) ? { address: e.address, name: names.get(e.address), ...e } : e))
     .sort((a, b) => a.address.localeCompare(b.address));
   return { app: APP, format: FORMAT, exported: now.toISOString(), pageTitleForAll: stored[APPEND_KEY] === true, bookmarks: list };

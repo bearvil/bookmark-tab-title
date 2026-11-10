@@ -246,7 +246,7 @@
     "message": "Ovo nije datoteka s postavkama Bookmark-Tab Titlea."
   },
   "importErrorSize": {
-    "message": "Datoteka je prevelika (više od 1 MB)."
+    "message": "Datoteka je prevelika (više od 5 MB)."
   },
   "importErrorQuota": {
     "message": "U sinkroniziranom spremištu preglednika nema mjesta za ove postavke. Ništa nije promijenjeno."

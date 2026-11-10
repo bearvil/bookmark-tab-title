@@ -248,7 +248,7 @@
     "message": "This is not a Bookmark-Tab Title settings file."
   },
   "importErrorSize": {
-    "message": "The file is too large (over 1 MB)."
+    "message": "The file is too large (over 5 MB)."
   },
   "importErrorQuota": {
     "message": "There is not enough room in the browser's synced storage for these settings. Nothing was changed."
