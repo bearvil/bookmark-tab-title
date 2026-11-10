@@ -71,7 +71,7 @@ A page with a bookmark of its own shows that name, and the next page returns to 
 - **Settings file**: export the scopes and page title choices of all your bookmarks (also the ones left at the default) to a JSON file and import them, e.g. into another browser or from the development build into the store version. Settings belong to a bookmark's address, so they apply to every bookmark with the same address, also one added later. An import shows a summary first and only replaces the settings of the addresses in the file.
 - **Right-click menu** on the page.
 
-**Add the page's own title** is off by default. Turn it on for all bookmarks on the settings page, or per bookmark with the "Page title" switch, which overrides the global option. The tab then follows the page as its title changes.
+**Add the page's own title** is off by default. Turn it on for all bookmarks on the settings page, or per bookmark with the "Page title" switch, which overrides the global option. The tab then follows the page as its title changes. The bookmark name is left out of the page title when the page already has it at its start or end ("Inbox - Gmail" under "Gmail" becomes "Gmail — Inbox"), and markup in a page title is shown as its text.
 
 ## Install
 
