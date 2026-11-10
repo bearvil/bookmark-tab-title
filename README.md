@@ -89,11 +89,13 @@ Plain JavaScript, no build step. `npm install` only pulls in Playwright for the 
 
 ```bash
 npm install
-npm test            # unit tests for URL matching, settings and the manifest
+npm test            # unit tests: URL matching, settings, settings file, texts, manifest
 npm run test:e2e    # real Chromium with the extension and real bookmarks (HEADED=1 to watch)
 npm run try         # visible Chromium with the extension and sample bookmarks, throwaway profile
 npm run package     # store zip → dist/bookmark-tab-title-<version>.zip
 ```
+
+Every test, by area: [docs/TESTS.md](docs/TESTS.md).
 
 | Path | What it is |
 |---|---|
