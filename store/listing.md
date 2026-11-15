@@ -68,9 +68,15 @@ Shows the name of the user's bookmark as the browser tab title whenever the page
 | Asset | File | Size |
 |---|---|---|
 | Store icon | `icons/icon-128.png` | 128×128 |
-| Screenshot | `store/screenshot-1280x800.png` | 1280×800 |
+| Screenshot 1: before and after | `store/screenshot-1280x800.png` | 1280×800 |
+| Screenshot 2: popup | `store/screenshot-2-popup-1280x800.png` | 1280×800 |
+| Screenshot 3: right-click menu | `store/screenshot-3-menu-1280x800.png` | 1280×800 |
+| Screenshot 4: settings page | `store/screenshot-4-settings-1280x800.png` | 1280×800 |
+| Screenshot 5: light and dark | `store/screenshot-5-themes-1280x800.png` | 1280×800 |
 | Small promo tile | `store/promo-small-440x280.png` | 440×280 |
 | Marquee promo tile | `store/promo-marquee-1400x560.png` | 1400×560 |
+
+Upload the screenshots in this order (the store shows up to five). Screenshot 1 and the promo tiles are rendered from their SVG sources with `node scripts/render-icons.js`; screenshots 2–5 are captured from the real extension UI with `node scripts/render-screenshots.js`.
 
 ## Package
 
