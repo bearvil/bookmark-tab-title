@@ -8,6 +8,7 @@
 
 When the page in a tab is one of your bookmarks, the tab shows the bookmark's name instead of the page title.
 
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-available-FB8742?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/bookmark-tab-title/foeboopceefdfpdllkoaknoemkfjecpa)
 [![CI](https://github.com/bearvil/bookmark-tab-title/actions/workflows/ci.yml/badge.svg)](https://github.com/bearvil/bookmark-tab-title/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0B4F58)](LICENSE)
 ![Manifest V3](https://img.shields.io/badge/manifest-v3-5EEAD4)
@@ -15,6 +16,8 @@ When the page in a tab is one of your bookmarks, the tab shows the bookmark's na
 [![Website](https://img.shields.io/badge/website-bearvil.github.io-0B4F58)](https://bearvil.github.io/work#bookmark-tab-title)
 
 Chrome · Edge · Opera · Brave · Vivaldi
+
+**[Add to Chrome from the Chrome Web Store](https://chromewebstore.google.com/detail/bookmark-tab-title/foeboopceefdfpdllkoaknoemkfjecpa)**
 
 <img src="store/screenshot-1280x800.png" width="820" alt="Before: tabs called Inbox (3), Dashboard and Dashboard. After: the same tabs called Mail – work, Sales dashboard and Ops dashboard.">
 
@@ -77,7 +80,11 @@ A page with a bookmark of its own shows that name, and the next page returns to 
 
 ## Install
 
-The extension is not in a store yet. To load it from source:
+Install it from the **[Chrome Web Store](https://chromewebstore.google.com/detail/bookmark-tab-title/foeboopceefdfpdllkoaknoemkfjecpa)**. Brave and Vivaldi install it from there directly. Edge needs **Allow extensions from other stores** turned on once, and Opera the **Install Chrome Extensions** add-on.
+
+### From source
+
+For development, or to try changes before they reach the store:
 
 1. Clone or download this repository.
 2. Open `chrome://extensions` (Edge: `edge://extensions`, Opera: `opera://extensions`).

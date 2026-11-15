@@ -2,6 +2,8 @@
 
 Text for the Chrome Web Store, Microsoft Edge Add-ons and Opera Add-ons. Keep it in sync with `_locales/` and the privacy policy.
 
+Live listing: [Chrome Web Store](https://chromewebstore.google.com/detail/bookmark-tab-title/foeboopceefdfpdllkoaknoemkfjecpa).
+
 ## Basics
 
 | Field | Value |
